@@ -1,0 +1,31 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".config/dotnet-tools.json" />
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="AGENTS.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="exclusions.dic" />
+    <File Path="global.json" />
+    <File Path="NuGet.config" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Solution Items/.config/">
+    <File Path=".config/dotnet-tools.json" />
+  </Folder>
+  <Folder Name="/Solution Items/.github/" />
+  <Folder Name="/Solution Items/.github/workflows/">
+    <File Path=".github/workflows/build-and-deploy.yml" />
+    <File Path=".github/workflows/deploy-infrastructure.yml" />
+  </Folder>
+  <Project Path="AzraTasks.AppHost/AzraTasks.AppHost.csproj" />
+  <Project Path="AzraTasks.Core.Tests/AzraTasks.Core.Tests.csproj" />
+  <Project Path="AzraTasks.Core/AzraTasks.Core.csproj" />
+  <Project Path="AzraTasks.Data/AzraTasks.Data.csproj" />
+  <Project Path="AzraTasks.ServiceDefaults/AzraTasks.ServiceDefaults.csproj" />
+  <Project Path="AzraTasks.UITests/AzraTasks.UITests.csproj" Id="a75465c6-4ed1-4ab4-b492-9697c5727ffc" />
+  <Project Path="AzraTasks.Web/AzraTasks.Web.csproj" />
+  <Project Path="AzraTasks/AzraTasks.csproj" />
+</Solution>
