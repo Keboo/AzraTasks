@@ -2,12 +2,12 @@
 
 public class HomePage(IPage page) : TestPageBase(page)
 {
-    private ILocator RoomNameInput => Page.Locator("input[type='text'], input[placeholder*='room']").First;
+    private ILocator PrimaryActionButton => Page.GetByTestId("home-primary-action");
 
     public Task NavigateAsync(Uri baseUrl) => PerformNavigationAsync(baseUrl, "");
 
     public async Task AssertIsLoadedAsync()
     {
-        await RoomNameInput.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible });
+        await PrimaryActionButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible });
     }
 }

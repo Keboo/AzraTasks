@@ -6,12 +6,7 @@ class ApiClient {
       credentials: 'include',
     })
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    
-    const text = await response.text()
-    return text ? JSON.parse(text) : undefined as T
+    return this.readResponse<T>(response)
   }
 
   async post<T = void>(url: string, data?: unknown): Promise<T> {
@@ -24,17 +19,7 @@ class ApiClient {
       body: data ? JSON.stringify(data) : undefined,
     })
     
-    if (!response.ok) {
-      const error = await response.text()
-      throw new Error(error || `HTTP error! status: ${response.status}`)
-    }
-    
-    if (response.status === 204) {
-      return undefined as T
-    }
-    
-    const text = await response.text()
-    return text ? JSON.parse(text) : undefined as T
+    return this.readResponse<T>(response)
   }
 
   async delete<T = void>(url: string): Promise<T> {
@@ -43,15 +28,7 @@ class ApiClient {
       credentials: 'include',
     })
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    
-    if (response.status === 204) {
-      return undefined as T
-    }
-    
-    return response.json()
+    return this.readResponse<T>(response)
   }
 
   async put<T = void>(url: string, data?: unknown): Promise<T> {
@@ -64,15 +41,33 @@ class ApiClient {
       body: data ? JSON.stringify(data) : undefined,
     })
     
+    return this.readResponse<T>(response)
+  }
+
+  private async readResponse<T>(response: Response): Promise<T> {
+    const text = await response.text()
+    let body: { message?: string; error?: string; title?: string } | undefined
+
+    if (text) {
+      try {
+        body = JSON.parse(text) as { message?: string; error?: string; title?: string }
+      } catch {
+        body = undefined
+      }
+    }
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      const message =
+        body?.message ||
+        body?.error ||
+        body?.title ||
+        text ||
+        `HTTP error! status: ${response.status}`
+
+      throw new Error(message)
     }
-    
-    if (response.status === 204) {
-      return undefined as T
-    }
-    
-    return response.json()
+
+    return (body ?? undefined) as T
   }
 }
 

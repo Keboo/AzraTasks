@@ -2,152 +2,69 @@ using AzraTasks.UITests.PageObjects;
 
 namespace AzraTasks.UITests;
 
-/// <summary>
-/// Comprehensive UI tests for the Q&A System workflow
-/// Tests cover registration, room creation, question management, and account deletion
-/// </summary>
 public class RoomWorkflowTests : AuthedUserTestBase
 {
-    private string TestRoomName { get; set; } = "";
+    private string TestListName { get; set; } = "";
 
     protected override async Task AfterTestSetupAsync()
     {
         await base.AfterTestSetupAsync();
-        TestRoomName = $"TestRoom{CreateUniqueId()}";
+        TestListName = $"TestList{CreateUniqueId()}";
     }
 
     [Test]
-    public async Task CreateRoom_ShouldAppearInMyRooms()
+    public async Task CreateList_ShouldAppearInMyLists()
     {
-        // Create room
-        var myRoomsPage = new MyRoomsPage(Page);
-        await myRoomsPage.NavigateAsync(FrontendBaseUri);
-        await myRoomsPage.CreateRoomAsync(TestRoomName);
+        var listsPage = new TodoListsPage(Page);
+        await listsPage.NavigateAsync(FrontendBaseUri);
+        await listsPage.CreateListAsync(TestListName);
 
-        // After room creation, verify the room appears in the My Rooms list
-        await myRoomsPage.NavigateAsync(FrontendBaseUri);
+        await Page.GoBackAsync();
+        await Page.WaitForURLAsync("**/lists", new PageWaitForURLOptions { Timeout = PlaywrightConfiguration.DefaultTimeout });
         
-        await Assert.That(myRoomsPage.RoomExistsAsync(TestRoomName))
+        await Assert.That(listsPage.ListExistsAsync(TestListName))
             .IsTrue()
-            .Because("Room should exist in My Rooms list");
+            .Because("List should exist in the list overview");
     }
 
     [Test]
-    public async Task SubmitQuestion_ShouldAppearInPending()
+    public async Task AddItem_ShouldAppearInTodoList()
     {
-        // Setup: Create room
-        var myRoomsPage = new MyRoomsPage(Page);
-        await myRoomsPage.NavigateAsync(FrontendBaseUri);
-        await myRoomsPage.CreateRoomAsync(TestRoomName);
-        
-        // Wait for room to be fully committed to database and verify it exists
-        await Task.Delay(5000, CancellationToken);
-        
-        // Submit question as different user
-        await using var context2 = await Browser.NewContextAsync();
-        var page2 = await context2.NewPageAsync();
-        
-        var roomViewPage = new RoomViewPage(page2);
-        await roomViewPage.NavigateAsync(FrontendBaseUri, TestRoomName);
-        await roomViewPage.SetDisplayNameAsync("Test User");
-        
-        var questionText = "Test Question?";
-        await roomViewPage.SubmitQuestionAsync(questionText);
-        
-        // Verify in manage page
-        var managePage = new ManageRoomPage(Page);
-        await managePage.NavigateAsync(FrontendBaseUri, TestRoomName);
-        
-        await Task.Delay(2000, CancellationToken); // Wait for question submission
-        
-        await Assert.That(await managePage.IsQuestionInPendingAsync(questionText)).IsTrue().Because("Submitted question should appear in pending");
-        
-        // Cleanup
-        await page2.CloseAsync();
-    }
-    
-    [Test]
-    public async Task ApproveQuestion_ShouldShowInPublicView()
-    {
-        // Setup: Create room and submit question
-        var myRoomsPage = new MyRoomsPage(Page);
-        await myRoomsPage.NavigateAsync(FrontendBaseUri);
-        await myRoomsPage.CreateRoomAsync(TestRoomName);
-        
-        // Wait for room to be fully committed to database and verify it exists
-        await Task.Delay(5000, CancellationToken);
-        
-        await using var context2 = await Browser.NewContextAsync();
-        var page2 = await context2.NewPageAsync();
-        
-        var roomViewPage = new RoomViewPage(page2);
-        await roomViewPage.NavigateAsync(FrontendBaseUri, TestRoomName);
-        await roomViewPage.SetDisplayNameAsync("Test User");
-        
-        var questionText = "Test Question for Approval?";
-        await roomViewPage.SubmitQuestionAsync(questionText);
-        
-        // Approve the question
-        var managePage = new ManageRoomPage(Page);
-        await managePage.NavigateAsync(FrontendBaseUri, TestRoomName);
-        await Task.Delay(2000, CancellationToken);
-        
-        await managePage.ApproveQuestionAsync(questionText);
-        
-        // Verify it appears in public view via SignalR
-        await roomViewPage.WaitForQuestionToAppearAsync(questionText, timeout: 10000);
-        await Assert.That(await roomViewPage.IsQuestionVisibleAsync(questionText)).IsTrue().Because("Approved question should appear in public view");
-        
-        // Cleanup
-        await page2.CloseAsync();
+        var listsPage = new TodoListsPage(Page);
+        await listsPage.NavigateAsync(FrontendBaseUri);
+        await listsPage.CreateListAsync(TestListName);
+
+        var todoListPage = new TodoListPage(Page);
+        var itemTitle = $"Task {CreateUniqueId()}";
+        await todoListPage.AddItemAsync(itemTitle);
+
+        await Assert.That(await todoListPage.ItemExistsAsync(itemTitle))
+            .IsTrue()
+            .Because("Newly added task should appear in the current list");
     }
 
     [Test]
     [Category(TestCategories.Accessibility)]
-    public async Task MyRoomsPageIsAccessible()
+    public async Task ListsPageIsAccessible()
     {
-        var myRoomsPage = new MyRoomsPage(Page);
-        await myRoomsPage.NavigateAsync(FrontendBaseUri);
-        await myRoomsPage.CreateRoomAsync(TestRoomName);
-        
-        // Wait for snackbar to disappear (it has insufficient contrast from notistack library)
-        await Page.WaitForSelectorAsync(".notistack-MuiContent", new PageWaitForSelectorOptions 
-        { 
-            State = WaitForSelectorState.Hidden,
-            Timeout = 10000 
-        });
+        var listsPage = new TodoListsPage(Page);
+        await listsPage.NavigateAsync(FrontendBaseUri);
+        await listsPage.CreateListAsync(TestListName);
+        await Page.GoBackAsync();
+        await Page.WaitForURLAsync("**/lists", new PageWaitForURLOptions { Timeout = PlaywrightConfiguration.DefaultTimeout });
         
         await AssertNoAccessibilityViolations();
     }
 
     [Test]
     [Category(TestCategories.Accessibility)]
-    public async Task RoomViewPageIsAccessible()
+    public async Task TodoListPageIsAccessible()
     {
-        MyRoomsPage myRoomsPage = new(Page);
-        await myRoomsPage.NavigateAsync(FrontendBaseUri);
-        await myRoomsPage.CreateRoomAsync(TestRoomName);
-
-        RoomViewPage roomViewPage = new(Page);
-        await roomViewPage.NavigateAsync(FrontendBaseUri, TestRoomName);
-        await roomViewPage.SetDisplayNameAsync("Test User");
-
-        await AssertNoAccessibilityViolations();
-    }
-
-    [Test]
-    [Category(TestCategories.Accessibility)]
-    public async Task ManageRoomPageIsAccessible()
-    {
-        MyRoomsPage myRoomsPage = new(Page);
-        await myRoomsPage.NavigateAsync(FrontendBaseUri);
-        await myRoomsPage.CreateRoomAsync(TestRoomName);
-
-        ManageRoomPage managePage = new(Page);
-        await managePage.NavigateAsync(FrontendBaseUri, TestRoomName);
+        var listsPage = new TodoListsPage(Page);
+        await listsPage.NavigateAsync(FrontendBaseUri);
+        await listsPage.CreateListAsync(TestListName);
 
         await AssertNoAccessibilityViolations();
     }
 }
-
 

@@ -18,7 +18,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         // Configure Room entity
         modelBuilder.Entity<Room>(entity =>
         {
-            entity.HasIndex(e => e.FriendlyName)
+            entity.HasIndex(e => new { e.CreatedByUserId, e.FriendlyName })
                 .IsUnique();
 
             entity.HasOne(e => e.CreatedBy)

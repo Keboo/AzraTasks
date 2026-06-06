@@ -1,4 +1,5 @@
 using AzraTasks.Core.QA;
+using AzraTasks.Core.Todos;
 using AzraTasks.Data;
 
 using Microsoft.AspNetCore.Identity;
@@ -52,6 +53,7 @@ public static class DependencyInjection
     {
         builder.Services.AddScoped<IRoomService, RoomService>();
         builder.Services.AddScoped<IQuestionService, QuestionService>();
+        builder.Services.AddScoped<ITodoListService, TodoListService>();
 
         return builder;
     }

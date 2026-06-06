@@ -164,7 +164,7 @@ namespace AzraTasks.Data.Migrations
 
                     b.HasIndex("CurrentQuestionId");
 
-                    b.HasIndex("FriendlyName")
+                    b.HasIndex("CreatedByUserId", "FriendlyName")
                         .IsUnique();
 
                     b.ToTable("Rooms");

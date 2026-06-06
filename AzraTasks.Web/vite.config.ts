@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
+import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import path from 'path'
 
 // Get backend URL from Aspire service discovery or fallback
@@ -21,16 +22,21 @@ const backendUrl = process.env.BACKEND_URL
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
+    vue({
+      template: { transformAssetUrls },
+    }),
+    vuetify({
+      autoImport: true,
+    }),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
         name: 'AzraTasks',
         short_name: 'AzraTasks',
-        description: 'A Progressive Web App built with React and Vite',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        description: 'A private TODO list built with Vue, Vuetify, and Vite',
+        theme_color: '#1976d2',
+        background_color: '#f5f7fb',
         display: 'standalone',
         start_url: '/',
         icons: [
