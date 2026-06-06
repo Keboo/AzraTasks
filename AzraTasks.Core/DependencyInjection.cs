@@ -1,9 +1,7 @@
-using AzraTasks.Core.QA;
 using AzraTasks.Core.Todos;
 using AzraTasks.Data;
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,15 +12,7 @@ public static class DependencyInjection
 {
     public static TBuilder AddDatabase<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
-        var connectionString = builder.Configuration.GetConnectionString(ConnectionStrings.DatabaseKey) 
-            ?? throw new InvalidOperationException($"Connection string '{ConnectionStrings.DatabaseKey}' not found.");
-
-        void BuildDbOptions(DbContextOptionsBuilder options)
-        {
-            options.UseAzureSql(connectionString);
-        }
-        builder.Services.AddDbContextFactory<ApplicationDbContext>(BuildDbOptions);
-        builder.Services.AddDbContextPool<ApplicationDbContext>(BuildDbOptions);
+        builder.AddSqliteDbContext<ApplicationDbContext>(ConnectionStrings.DatabaseKey);
 
         if (builder.Environment.IsDevelopment())
         {
@@ -34,9 +24,9 @@ public static class DependencyInjection
             options.SignIn.RequireConfirmedAccount = true;
             options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
         })
-        .AddEntityFrameworkStores<ApplicationDbContext>()
-        .AddSignInManager()
-        .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddSignInManager()
+            .AddDefaultTokenProviders();
 
         // Only run migrations on startup when explicitly enabled (e.g., during: azd up)
         // Applying migrations on startup is not recommended for production scenarios.
@@ -49,10 +39,8 @@ public static class DependencyInjection
         return builder;
     }
 
-    public static TBuilder AddQAServices<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
+    public static TBuilder AddTodo<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
-        builder.Services.AddScoped<IRoomService, RoomService>();
-        builder.Services.AddScoped<IQuestionService, QuestionService>();
         builder.Services.AddScoped<ITodoListService, TodoListService>();
 
         return builder;

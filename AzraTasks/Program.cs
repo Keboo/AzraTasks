@@ -1,18 +1,18 @@
+using System.Text;
+
 using AzraTasks.Core;
-using AzraTasks.Core.Hubs;
 using AzraTasks.Data;
 using AzraTasks.Middleware;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults()
     .AddDatabase()
-    .AddQAServices();
+    .AddTodo();
 
 // Add HTTP context accessor for SignalR authentication
 builder.Services.AddHttpContextAccessor();
@@ -51,14 +51,6 @@ builder.Services.AddCors(options =>
 // Add authorization policies
 builder.Services.AddAuthorization(options =>
 {
-    // Policy that allows both cookie and JWT authentication for SignalR
-    options.AddPolicy("SignalRPolicy", policy =>
-    {
-        policy.AddAuthenticationSchemes(
-            IdentityConstants.ApplicationScheme, 
-            JwtBearerDefaults.AuthenticationScheme);
-        policy.RequireAssertion(_ => true); // Always allow
-    });
 });
 
 var authBuilder = builder.Services.AddAuthentication(options =>
@@ -172,11 +164,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-// SignalR hub uses JWT authentication when token present, allows anonymous otherwise
-// Method-level [Authorize] enforces authentication for owner operations
-app.MapHub<RoomHub>("/hubs/room")
-    .RequireAuthorization("SignalRPolicy");
 
 // SPA fallback for production
 if (!app.Environment.IsDevelopment())

@@ -11,8 +11,7 @@ internal static class AspireExtensions
 {
     extension(ExecuteCommandContext context)
     {
-        public ILogger GetResourceLogger<T>(IResourceBuilder<T> resourceBuilder)
-        where T : IResource
+        public ILogger GetResourceLogger<T>(IResourceBuilder<T> resourceBuilder) where T : IResource
         {
             return GetResourceLogger(context.ServiceProvider, resourceBuilder.Resource);
         }

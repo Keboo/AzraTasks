@@ -1,0 +1,5 @@
+{
+  "appHost": {
+    "path": "AzraTasks.AppHost/AzraTasks.AppHost.csproj"
+  }
+}

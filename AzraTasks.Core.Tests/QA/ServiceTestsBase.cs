@@ -1,4 +1,3 @@
-using AzraTasks.Core.Hubs;
 using AzraTasks.Data;
 
 namespace AzraTasks.Core.Tests.QA;
@@ -11,7 +10,6 @@ public abstract class ServiceTestsBase
     public async Task Setup()
     {
         Mocker.WithDbContext<ApplicationDbContext>();
-        Mocker.WithSignalR<RoomHub>();
     }
 
     [After(Test)]
@@ -40,49 +38,45 @@ public abstract class ServiceTestsBase
         return user;
     }
 
-    protected async Task<Room> CreateRoomAsync(string userId, string friendlyName = "Test Room")
+    protected async Task<TodoList> CreateTodoList(string userId, string friendlyName = "Test Room")
     {
-        var room = new Room
+        var list = new TodoList
         {
             Id = Guid.NewGuid(),
-            FriendlyName = friendlyName,
-            CreatedByUserId = userId,
+            Name = friendlyName,
+            CreatedBy = await Mocker.InDbScopeAsync(async context => await context.Users.FindAsync(userId)),
             CreatedDate = DateTimeOffset.UtcNow
         };
 
         await Mocker.InDbScopeAsync(async context =>
         {
-            context.Rooms.Add(room);
+            context.TodoLists.Add(list);
             await context.SaveChangesAsync();
         });
 
-        return room;
+        return list;
     }
 
-    protected async Task<Question> CreateQuestionAsync(
-        Guid roomId,
-        string questionText = "Test Question",
-        string? authorName = "Test Author",
-        bool isApproved = false,
-        bool isAnswered = false)
+    protected async Task<TodoItem> CreateTodoItemAsync(
+        Guid listId,
+        string text = "Test Item",
+        bool isComplete = false)
     {
-        var question = new Question
+        var todoItem = new TodoItem
         {
             Id = Guid.NewGuid(),
-            RoomId = roomId,
-            QuestionText = questionText,
-            AuthorName = authorName,
-            IsApproved = isApproved,
-            IsAnswered = isAnswered,
+            ListId = listId,
+            Text = text,
+            IsComplete = isComplete,
             CreatedDate = DateTimeOffset.UtcNow
         };
 
         await Mocker.InDbScopeAsync(async context =>
         {
-            context.Questions.Add(question);
+            context.TodoItems.Add(todoItem);
             await context.SaveChangesAsync();
         });
 
-        return question;
+        return todoItem;
     }
 }

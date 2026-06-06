@@ -17,9 +17,9 @@ public sealed class TodoListServiceTests : ServiceTestsBase
         var firstList = await service.CreateListAsync("Inbox", userOne.Id, CancellationToken.None);
         var secondList = await service.CreateListAsync("Inbox", userTwo.Id, CancellationToken.None);
 
-        await Assert.That(firstList.FriendlyName).IsEqualTo("Inbox");
-        await Assert.That(secondList.FriendlyName).IsEqualTo("Inbox");
-        await Assert.That(firstList.CreatedByUserId).IsNotEqualTo(secondList.CreatedByUserId);
+        await Assert.That(firstList.Name).IsEqualTo("Inbox");
+        await Assert.That(secondList.Name).IsEqualTo("Inbox");
+        await Assert.That(firstList.CreatedBy!.Id).IsNotEqualTo(secondList.CreatedBy!.Id);
     }
 
     [Test]
@@ -39,18 +39,18 @@ public sealed class TodoListServiceTests : ServiceTestsBase
     public async Task CreateItemAsync_AddsItemToOwnedList()
     {
         var user = await CreateUserAsync();
-        var list = await CreateRoomAsync(user.Id, "Inbox");
+        var list = await CreateTodoList(user.Id, "Inbox");
         var service = Mocker.CreateInstance<TodoListService>();
 
         var item = await service.CreateItemAsync(list.Id, "Review PR", user.Id, CancellationToken.None);
 
-        await Assert.That(item.QuestionText).IsEqualTo("Review PR");
-        await Assert.That(item.IsAnswered).IsFalse();
+        await Assert.That(item.Text).IsEqualTo("Review PR");
+        await Assert.That(item.IsComplete).IsFalse();
 
         await Mocker.InDbScopeAsync(async context =>
         {
-            var storedItem = await context.Questions.SingleAsync(question => question.Id == item.Id);
-            await Assert.That(storedItem.RoomId).IsEqualTo(list.Id);
+            var storedItem = await context.TodoItems.SingleAsync(item => item.Id == item.Id);
+            await Assert.That(storedItem.ListId).IsEqualTo(list.Id);
         });
     }
 
@@ -58,13 +58,13 @@ public sealed class TodoListServiceTests : ServiceTestsBase
     public async Task SetItemCompletedAsync_UpdatesCompletionState()
     {
         var user = await CreateUserAsync();
-        var list = await CreateRoomAsync(user.Id, "Inbox");
-        var item = await CreateQuestionAsync(list.Id, "Review PR");
+        var list = await CreateTodoList(user.Id, "Inbox");
+        var item = await CreateTodoItemAsync(list.Id, "Review PR");
         var service = Mocker.CreateInstance<TodoListService>();
 
         var updatedItem = await service.SetItemCompletedAsync(list.Id, item.Id, true, user.Id, CancellationToken.None);
 
-        await Assert.That(updatedItem.IsAnswered).IsTrue();
+        await Assert.That(updatedItem.IsComplete).IsTrue();
         await Assert.That(updatedItem.LastModifiedDate).IsNotNull();
     }
 
@@ -73,8 +73,8 @@ public sealed class TodoListServiceTests : ServiceTestsBase
     {
         var owner = await CreateUserAsync("owner");
         var otherUser = await CreateUserAsync("other");
-        var list = await CreateRoomAsync(owner.Id, "Inbox");
-        var item = await CreateQuestionAsync(list.Id, "Review PR");
+        var list = await CreateTodoList(owner.Id, "Inbox");
+        var item = await CreateTodoItemAsync(list.Id, "Review PR");
         var service = Mocker.CreateInstance<TodoListService>();
 
         await Assert.That(async () => await service.DeleteItemAsync(list.Id, item.Id, otherUser.Id, CancellationToken.None))

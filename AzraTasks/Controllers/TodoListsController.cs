@@ -118,16 +118,16 @@ public record SetTodoItemCompletionRequest(bool IsCompleted);
 
 public sealed record TodoListDto(Guid Id, string Name, DateTimeOffset CreatedDate)
 {
-    public static TodoListDto FromRoom(Room room) => new(room.Id, room.FriendlyName, room.CreatedDate);
+    public static TodoListDto FromRoom(TodoList room) => new(room.Id, room.Name, room.CreatedDate);
 }
 
 public sealed record TodoItemDto(Guid Id, Guid ListId, string Title, bool IsCompleted, DateTimeOffset CreatedDate, DateTimeOffset? LastModifiedDate)
 {
-    public static TodoItemDto FromQuestion(Question question) => new(
+    public static TodoItemDto FromQuestion(TodoItem question) => new(
         question.Id,
-        question.RoomId,
-        question.QuestionText,
-        question.IsAnswered,
+        question.ListId,
+        question.Text,
+        question.IsComplete,
         question.CreatedDate,
         question.LastModifiedDate);
 }

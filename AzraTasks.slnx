@@ -25,7 +25,6 @@
   <Project Path="AzraTasks.Core/AzraTasks.Core.csproj" />
   <Project Path="AzraTasks.Data/AzraTasks.Data.csproj" />
   <Project Path="AzraTasks.ServiceDefaults/AzraTasks.ServiceDefaults.csproj" />
-  <Project Path="AzraTasks.UITests/AzraTasks.UITests.csproj" Id="a75465c6-4ed1-4ab4-b492-9697c5727ffc" />
   <Project Path="AzraTasks.Web/AzraTasks.Web.csproj" />
   <Project Path="AzraTasks/AzraTasks.csproj" />
 </Solution>
