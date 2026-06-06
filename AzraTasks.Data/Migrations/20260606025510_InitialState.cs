@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AzraTasks.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialState : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -277,20 +277,15 @@ namespace AzraTasks.Data.Migrations
                 columns: new[] { "RoomId", "IsApproved", "IsAnswered" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rooms_CreatedByUserId",
+                name: "IX_Rooms_CreatedByUserId_FriendlyName",
                 table: "Rooms",
-                column: "CreatedByUserId");
+                columns: new[] { "CreatedByUserId", "FriendlyName" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rooms_CurrentQuestionId",
                 table: "Rooms",
                 column: "CurrentQuestionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Rooms_FriendlyName",
-                table: "Rooms",
-                column: "FriendlyName",
-                unique: true);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Questions_Rooms_RoomId",
