@@ -5,7 +5,7 @@ using AzraTasks.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 
-namespace AzraTasks.Auth.v1;
+namespace AzraTasks.Auth;
 
 public static class AuthMethods
 {

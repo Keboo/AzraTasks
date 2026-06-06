@@ -2,11 +2,10 @@ using System.Security.Claims;
 
 using AzraTasks.Core.Todos;
 using AzraTasks.Data;
-using AzraTasks.TodoLists;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace AzraTasks.TodoLists.v1;
+namespace AzraTasks.TodoLists;
 
 public static class TodoListMethods
 {
@@ -16,7 +15,7 @@ public static class TodoListMethods
     {
         var userId = GetUserId(user);
         var lists = await todoListService.GetListsAsync(userId);
-        return TypedResults.Ok(lists.Select(TodoListDto.FromRoom));
+        return TypedResults.Ok(lists.Select(TodoListDto.FromList));
     }
 
     public static async Task<Results<Ok<TodoListDto>, NotFound>> GetList(
@@ -29,7 +28,7 @@ public static class TodoListMethods
 
         return list is null
             ? TypedResults.NotFound()
-            : TypedResults.Ok(TodoListDto.FromRoom(list));
+            : TypedResults.Ok(TodoListDto.FromList(list));
     }
 
     public static async Task<CreatedAtRoute<TodoListDto>> CreateList(
@@ -40,7 +39,7 @@ public static class TodoListMethods
     {
         var userId = GetUserId(user);
         var list = await todoListService.CreateListAsync(request.Name, userId, cancellationToken);
-        var response = TodoListDto.FromRoom(list);
+        var response = TodoListDto.FromList(list);
 
         return TypedResults.CreatedAtRoute(response, TodoListRoutes.GetList, new { listId = list.Id });
     }
@@ -63,7 +62,7 @@ public static class TodoListMethods
     {
         var userId = GetUserId(user);
         var items = await todoListService.GetItemsAsync(listId, userId);
-        return TypedResults.Ok(items.Select(TodoItemDto.FromQuestion));
+        return TypedResults.Ok(items.Select(TodoItemDto.FromTodoItem));
     }
 
     public static async Task<CreatedAtRoute<TodoItemDto>> CreateItem(
@@ -75,7 +74,7 @@ public static class TodoListMethods
     {
         var userId = GetUserId(user);
         var item = await todoListService.CreateItemAsync(listId, request.Title, userId, cancellationToken);
-        var response = TodoItemDto.FromQuestion(item);
+        var response = TodoItemDto.FromTodoItem(item);
 
         return TypedResults.CreatedAtRoute(response, TodoListRoutes.GetItems, new { listId });
     }
@@ -90,7 +89,7 @@ public static class TodoListMethods
     {
         var userId = GetUserId(user);
         var item = await todoListService.UpdateItemAsync(listId, itemId, request.Title, userId, cancellationToken);
-        return TypedResults.Ok(TodoItemDto.FromQuestion(item));
+        return TypedResults.Ok(TodoItemDto.FromTodoItem(item));
     }
 
     public static async Task<Ok<TodoItemDto>> SetItemCompletion(
@@ -103,7 +102,7 @@ public static class TodoListMethods
     {
         var userId = GetUserId(user);
         var item = await todoListService.SetItemCompletedAsync(listId, itemId, request.IsCompleted, userId, cancellationToken);
-        return TypedResults.Ok(TodoItemDto.FromQuestion(item));
+        return TypedResults.Ok(TodoItemDto.FromTodoItem(item));
     }
 
     public static async Task<NoContent> DeleteItem(
@@ -135,7 +134,7 @@ public sealed record SetTodoItemCompletionRequest(bool IsCompleted);
 
 public sealed record TodoListDto(Guid Id, string Name, DateTimeOffset CreatedDate)
 {
-    public static TodoListDto FromRoom(TodoList room) => new(room.Id, room.Name, room.CreatedDate);
+    public static TodoListDto FromList(TodoList list) => new(list.Id, list.Name, list.CreatedDate);
 }
 
 public sealed record TodoItemDto(
@@ -146,11 +145,11 @@ public sealed record TodoItemDto(
     DateTimeOffset CreatedDate,
     DateTimeOffset? LastModifiedDate)
 {
-    public static TodoItemDto FromQuestion(TodoItem question) => new(
-        question.Id,
-        question.ListId,
-        question.Text,
-        question.IsComplete,
-        question.CreatedDate,
-        question.LastModifiedDate);
+    public static TodoItemDto FromTodoItem(TodoItem item) => new(
+        item.Id,
+        item.ListId,
+        item.Text,
+        item.IsComplete,
+        item.CreatedDate,
+        item.LastModifiedDate);
 }

@@ -1,5 +1,3 @@
-using AzraTasks.TodoLists.v1;
-
 namespace AzraTasks.TodoLists;
 
 public static class TodoListExtensions

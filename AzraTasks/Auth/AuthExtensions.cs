@@ -1,5 +1,3 @@
-using AzraTasks.Auth.v1;
-
 namespace AzraTasks.Auth;
 
 public static class AuthExtensions
