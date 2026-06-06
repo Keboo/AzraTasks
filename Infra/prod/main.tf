@@ -44,14 +44,12 @@ module "backend_container_app" {
 
   env_vars = {
     AZURE_CLIENT_ID = azurerm_user_assigned_identity.app_identity.client_id
-    # Aspire uses ConnectionStrings__<key> naming convention
-    ConnectionStrings__Database = module.sql.connection_string
     APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights.application_insights.connection_string
     # CORS: Allow the Static Web App origin
     AllowedOrigins__0 = "https://${module.static_web_app.default_host_name}"
   }
 
-  depends_on = [module.sql, module.static_web_app]
+  depends_on = [module.static_web_app]
 }
 
 module "static_web_app" {
@@ -65,19 +63,6 @@ module "static_web_app" {
   }
 
   tags = local.tags
-}
-
-module "sql" {
-  source = "../modules/sql"
-
-  resource_group = azurerm_resource_group.resource_group
-
-  server_name   = "azratasks-${lower(local.environment)}-sqlserver"
-  database_name = "azratasks-${lower(local.environment)}-db"
-
-  tags            = local.tags
-  users           = { app_identity = azurerm_user_assigned_identity.app_identity.name }
-  sql_admin_group = azuread_group.admins_group
 }
 
 module "application_insights" {

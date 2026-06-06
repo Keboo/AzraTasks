@@ -1,8 +1,10 @@
 using System.Text;
 
+using AzraTasks.Auth;
 using AzraTasks.Core;
 using AzraTasks.Data;
 using AzraTasks.Middleware;
+using AzraTasks.TodoLists;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -18,7 +20,6 @@ builder.AddServiceDefaults()
 builder.Services.AddHttpContextAccessor();
 
 // Add services to the container.
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -163,7 +164,8 @@ if (!app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapAuthEndpoints();
+app.MapTodoListEndpoints();
 
 // SPA fallback for production
 if (!app.Environment.IsDevelopment())
