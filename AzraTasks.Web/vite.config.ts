@@ -1,20 +1,19 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { VitePWA } from 'vite-plugin-pwa'
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import path from 'path'
 
 // Get backend URL from Aspire service discovery or fallback
 // Aspire sets environment variables in the format: services__{service-name}__{protocol}__{index}
 // For a service named "AzraTasks-backend", it would be services__AzraTasks-backend__https__0 or services__AzraTasks-backend__http__0
-// On Linux, Aspire may use REACTAPP_BACKEND_HTTP format instead
+// On Linux, Aspire may use VITE_BACKEND_HTTP format instead
 // Prefer HTTP to avoid dev-certificate trust issues (especially in CI environments)
 // BACKEND_URL is set in production builds via CI/CD (from Terraform outputs)
 const backendUrl = process.env.BACKEND_URL
   || process.env['services__AzraTasks-backend__http__0'] 
   || process.env['services__AzraTasks-backend__https__0'] 
-  || process.env.REACTAPP_BACKEND_HTTP
-  || process.env.REACTAPP_BACKEND_HTTPS  
+  || process.env.VITE_BACKEND_HTTP
+  || process.env.VITE_BACKEND_HTTPS
   || process.env.services__backend__http__0 
   || process.env.services__backend__https__0 
   || 'https://localhost:5001'
@@ -28,75 +27,12 @@ export default defineConfig({
     vuetify({
       autoImport: true,
     }),
-    VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
-      manifest: {
-        name: 'AzraTasks',
-        short_name: 'AzraTasks',
-        description: 'A private TODO list built with Vue, Vuetify, and Vite',
-        theme_color: '#1976d2',
-        background_color: '#f5f7fb',
-        display: 'standalone',
-        start_url: '/',
-        icons: [
-          {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
-        ]
+    heyApiPlugin({
+      config: {
+        input: 'https://azratasks.dev.localhost:7147/swagger/v1/swagger.json', 
+        output: 'src/services/api',
       },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          {
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'gstatic-fonts-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          }
-        ]
-      },
-      devOptions: {
-        // This enables PWA support in development mode.
-        // Learn more about PWA apps here: https://cra.link/PWA
-        enabled: true
-      }
-    })
+    }),
   ],
   resolve: {
     alias: {

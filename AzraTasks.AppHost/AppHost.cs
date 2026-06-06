@@ -18,8 +18,8 @@ var frontendApp = builder.AddJavaScriptApp(Resources.Frontend, "../AzraTasks.Web
     .WithHttpEndpoint(env: "PORT")
     .WithExternalHttpEndpoints()
     .WithDependency(backend)
-    .WithEnvironment("REACTAPP_BACKEND_HTTP", backend.GetEndpoint("http"))
-    .WithEnvironment("REACTAPP_BACKEND_HTTPS", backend.GetEndpoint("https"));
+    .WithEnvironment("VITE_BACKEND_HTTP", backend.GetEndpoint("http"))
+    .WithEnvironment("VITE_BACKEND_HTTPS", backend.GetEndpoint("https"));
 
 if (builder.ExecutionContext.IsPublishMode)
 {

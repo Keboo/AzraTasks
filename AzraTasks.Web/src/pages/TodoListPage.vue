@@ -157,21 +157,34 @@ onMounted(() => {
   <div class="d-flex flex-column ga-6">
     <div class="d-flex flex-wrap justify-space-between align-center ga-4">
       <div>
-        <v-btn variant="text" class="mb-2 px-0" @click="router.push({ name: 'lists' })">
+        <v-btn
+          variant="text"
+          class="mb-2 px-0"
+          @click="router.push({ name: 'lists' })"
+        >
           &larr; Back to lists
         </v-btn>
-        <h1 class="text-h4">{{ list?.name ?? 'Loading list...' }}</h1>
+        <h1 class="text-h4">
+          {{ list?.name ?? 'Loading list...' }}
+        </h1>
         <p class="text-body-1 text-medium-emphasis">
           {{ completedCount }} of {{ items.length }} tasks completed
         </p>
       </div>
     </div>
 
-    <v-alert v-if="errorMessage" type="error" variant="tonal">
+    <v-alert
+      v-if="errorMessage"
+      type="error"
+      variant="tonal"
+    >
       {{ errorMessage }}
     </v-alert>
 
-    <v-card rounded="xl" elevation="1">
+    <v-card
+      rounded="xl"
+      elevation="1"
+    >
       <v-card-text class="d-flex flex-wrap ga-4 align-center">
         <v-text-field
           v-model="newItemTitle"
@@ -194,9 +207,19 @@ onMounted(() => {
       </v-card-text>
     </v-card>
 
-    <v-progress-linear v-if="loading" color="primary" indeterminate rounded />
+    <v-progress-linear
+      v-if="loading"
+      color="primary"
+      indeterminate
+      rounded
+    />
 
-    <v-list v-else lines="two" bg-color="transparent" class="d-flex flex-column ga-3 pa-0">
+    <v-list
+      v-else
+      lines="two"
+      bg-color="transparent"
+      class="d-flex flex-column ga-3 pa-0"
+    >
       <v-list-item
         v-for="item in items"
         :key="item.id"
@@ -222,19 +245,35 @@ onMounted(() => {
 
         <template #append>
           <div class="d-flex ga-2">
-            <v-btn icon="mdi-pencil" variant="text" @click="openEditDialog(item)" />
-            <v-btn icon="mdi-delete" variant="text" color="error" @click="deleteItem(item.id)" />
+            <v-btn
+              icon="mdi-pencil"
+              variant="text"
+              @click="openEditDialog(item)"
+            />
+            <v-btn
+              icon="mdi-delete"
+              variant="text"
+              color="error"
+              @click="deleteItem(item.id)"
+            />
           </div>
         </template>
       </v-list-item>
 
-      <v-list-item v-if="!items.length" rounded="xl" class="bg-surface elevation-1">
+      <v-list-item
+        v-if="items.length == 0"
+        rounded="xl"
+        class="bg-surface elevation-1"
+      >
         <v-list-item-title>No tasks yet</v-list-item-title>
         <v-list-item-subtitle>Add your first task above.</v-list-item-subtitle>
       </v-list-item>
     </v-list>
 
-    <v-dialog v-model="editDialogOpen" max-width="520">
+    <v-dialog
+      v-model="editDialogOpen"
+      max-width="520"
+    >
       <v-card rounded="xl">
         <v-card-title>Edit task</v-card-title>
         <v-card-text>
@@ -248,8 +287,19 @@ onMounted(() => {
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn variant="text" @click="editDialogOpen = false">Cancel</v-btn>
-          <v-btn color="primary" :loading="saving" @click="saveEdit">Save</v-btn>
+          <v-btn
+            variant="text"
+            @click="editDialogOpen = false"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            color="primary"
+            :loading="saving"
+            @click="saveEdit"
+          >
+            Save
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

@@ -44,25 +44,6 @@ This template uses a `global.json` file to specify the required .NET SDK version
 
 ## Key Features
 
-### Progressive Web App (PWA) Support
-Both the AzraTasks.Web includes full PWA support with:
-- Service worker for offline functionality
-- Web app manifest for install-to-homescreen capability
-- Caching strategies for improved performance
-- App icons (192x192 and 512x512)
-
-**React/Vite PWA:**
-The React frontend uses `vite-plugin-pwa` with Workbox for advanced caching strategies. 
-
-Features include:
-- Automatic service worker registration and updates
-- Static asset precaching with Workbox
-- Runtime caching for images and Google Fonts
-- App Shell pattern for SPA navigation
-- Customizable manifest configuration in `vite.config.ts`
-
-Note: Service workers only work in production builds and over HTTPS (or localhost).
-
 ### Build Customization
 [Docs](https://learn.microsoft.com/visualstudio/msbuild/customize-by-directory?view=vs-2022&WT.mc_id=DT-MVP-5003472)
 
@@ -119,7 +100,6 @@ cd Infra
 terraform init
 terraform plan
 ```
-
 
 
 
