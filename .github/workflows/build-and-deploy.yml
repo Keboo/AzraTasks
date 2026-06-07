@@ -264,7 +264,7 @@ jobs:
             --name ${{ needs.get-infrastructure-outputs.outputs.backend_container_app_name }} `
             --resource-group ${{ needs.get-infrastructure-outputs.outputs.resource_group_name }} `
             --image ${{ needs.get-infrastructure-outputs.outputs.acr_login_server }}/azratasks:${{ github.sha }} `
-            --revision-suffix $revisionSuffix
+            --revision-suffix "$revisionSuffix"
 
       - name: Resolve Backend URL
         id: resolve-backend-url
@@ -309,7 +309,7 @@ jobs:
         working-directory: ${{ env.FRONTEND_PROJECT_PATH }}
         run: pnpm run build
         env:
-          BACKEND_URL: ${{ needs.deploy-backend.outputs.backend_url || needs.get-infrastructure-outputs.outputs.backend_url }}
+          BACKEND_URL: ${{ needs.deploy-backend.outputs.backend_url }}
           # BACKEND_URL: 'TODO' # This should be set to the backend_url, if you use the generated ACA endpoint you may run into issues with cross origin issues.
           APPLICATIONINSIGHTS_CONNECTION_STRING: ${{ needs.get-infrastructure-outputs.outputs.applicationinsights_connection_string }}
 
