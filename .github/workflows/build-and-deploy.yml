@@ -252,7 +252,7 @@ jobs:
           az acr login --name ${{ needs.get-infrastructure-outputs.outputs.acr_login_server }}
 
       - name: dotnet publish
-        run: dotnet publish -r linux-x64 --self-contained -t:PublishContainer -p:ContainerRegistry=${{ needs.get-infrastructure-outputs.outputs.acr_login_server }} -p:ContainerImageTags="${{ github.sha }}"
+        run: dotnet publish .\AzraTasks.Api\AzraTasks.Api.csproj -r linux-x64 --self-contained -t:PublishContainer -p:ContainerRegistry=${{ needs.get-infrastructure-outputs.outputs.acr_login_server }} -p:ContainerImageTags="${{ github.sha }}"
 
       - name: Update Container App
         run: |
@@ -261,7 +261,7 @@ jobs:
           az containerapp update `
             --name ${{ needs.get-infrastructure-outputs.outputs.backend_container_app_name }} `
             --resource-group ${{ needs.get-infrastructure-outputs.outputs.resource_group_name }} `
-            --image ${{ needs.get-infrastructure-outputs.outputs.acr_login_server }}/azratasks:${{ github.sha }} `
+            --image ${{ needs.get-infrastructure-outputs.outputs.acr_login_server }}/azratasks-api:${{ github.sha }} `
             --revision-suffix "$revisionSuffix"
 
   # Deploy frontend to Azure Static Web Apps
