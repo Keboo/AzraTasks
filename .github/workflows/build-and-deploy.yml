@@ -256,15 +256,18 @@ jobs:
 
       - name: Update Container App
         run: |
+          $revisionSuffix = '${{ github.sha }}'.Substring(0, 7)
+
           az containerapp update `
             --name ${{ needs.get-infrastructure-outputs.outputs.backend_container_app_name }} `
             --resource-group ${{ needs.get-infrastructure-outputs.outputs.resource_group_name }} `
-            --image ${{ needs.get-infrastructure-outputs.outputs.acr_login_server }}/azratasks:${{ github.sha }}
+            --image ${{ needs.get-infrastructure-outputs.outputs.acr_login_server }}/azratasks:${{ github.sha }} `
+            --revision-suffix "$revisionSuffix"
 
   # Deploy frontend to Azure Static Web Apps
   deploy-frontend:
     runs-on: ubuntu-latest
-    needs: [build, get-infrastructure-outputs]
+    needs: [build, get-infrastructure-outputs, deploy-backend]
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     environment: production
     steps:
