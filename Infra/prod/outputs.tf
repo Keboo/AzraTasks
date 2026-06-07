@@ -38,3 +38,9 @@ output "applicationinsights_connection_string" {
   value       = module.application_insights.application_insights.connection_string
   sensitive   = true
 }
+
+output "database_connection_string" {
+  description = "The connection string for the backend database"
+  value       = "Data Source=/tmp/azratasks.db"
+  sensitive   = true
+}
