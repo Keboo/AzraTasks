@@ -9,9 +9,8 @@ var db = builder.AddSqliteDatabase();
 
 var backend = builder.AddProject<Projects.AzraTasks>("AzraTasks-backend")
     .WithDependency(db, ConnectionStrings.DatabaseKey)
-    .WithUITests()
     .WithExternalHttpEndpoints()
-    .PublishAsAzureContainerApp((infra, app) => app.Template.Scale.MaxReplicas = 1);
+    .WithGenApiClientCommand();
 
 var frontendApp = builder.AddJavaScriptApp(Resources.Frontend, "../AzraTasks.Web", "dev")
     .WithNpm(install: true)

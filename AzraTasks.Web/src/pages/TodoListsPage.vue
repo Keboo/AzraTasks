@@ -68,7 +68,9 @@ onMounted(() => {
   <div class="d-flex flex-column ga-6">
     <div class="d-flex flex-wrap justify-space-between align-center ga-4">
       <div>
-        <h1 class="text-h4 mb-2">My TODO lists</h1>
+        <h1 class="text-h4 mb-2">
+          My TODO lists
+        </h1>
         <p class="text-body-1 text-medium-emphasis">
           Organize tasks into focused lists and keep progress moving.
         </p>
@@ -85,21 +87,46 @@ onMounted(() => {
       </v-btn>
     </div>
 
-    <v-alert v-if="errorMessage" type="error" variant="tonal">
+    <v-alert
+      v-if="errorMessage"
+      type="error"
+      variant="tonal"
+    >
       {{ errorMessage }}
     </v-alert>
 
-    <v-progress-linear v-if="loading" color="primary" indeterminate rounded />
+    <v-progress-linear
+      v-if="loading"
+      color="primary"
+      indeterminate
+      rounded
+    />
 
     <v-row v-else>
-      <v-col v-for="list in lists" :key="list.id" cols="12" md="6" lg="4">
-        <v-card data-testid="todo-list-card" rounded="xl" elevation="1">
-          <v-card-title class="text-h6">{{ list.name }}</v-card-title>
+      <v-col
+        v-for="list in lists"
+        :key="list.id"
+        cols="12"
+        md="6"
+        lg="4"
+      >
+        <v-card
+          data-testid="todo-list-card"
+          rounded="xl"
+          elevation="1"
+        >
+          <v-card-title class="text-h6">
+            {{ list.name }}
+          </v-card-title>
           <v-card-subtitle>
             Created {{ new Date(list.createdDate).toLocaleString() }}
           </v-card-subtitle>
           <v-card-actions>
-            <v-btn color="primary" variant="text" @click="router.push({ name: 'list', params: { listId: list.id } })">
+            <v-btn
+              color="primary"
+              variant="text"
+              @click="router.push({ name: 'list', params: { listId: list.id } })"
+            >
               Open
             </v-btn>
             <v-spacer />
@@ -115,18 +142,35 @@ onMounted(() => {
         </v-card>
       </v-col>
 
-      <v-col v-if="!lists.length" cols="12">
-        <v-sheet rounded="xl" color="surface" class="pa-8 text-center">
-          <div class="text-h6 mb-2">No lists yet</div>
+      <v-col
+        v-if="!lists.length"
+        cols="12"
+      >
+        <v-sheet
+          rounded="xl"
+          color="surface"
+          class="pa-8 text-center"
+        >
+          <div class="text-h6 mb-2">
+            No lists yet
+          </div>
           <p class="text-body-2 text-medium-emphasis mb-4">
             Create your first list to start tracking work.
           </p>
-          <v-btn color="primary" @click="createDialogOpen = true">Create a list</v-btn>
+          <v-btn
+            color="primary"
+            @click="createDialogOpen = true"
+          >
+            Create a list
+          </v-btn>
         </v-sheet>
       </v-col>
     </v-row>
 
-    <v-dialog v-model="createDialogOpen" max-width="480">
+    <v-dialog
+      v-model="createDialogOpen"
+      max-width="480"
+    >
       <v-card rounded="xl">
         <v-card-title>Create a new list</v-card-title>
         <v-card-text>
@@ -140,7 +184,12 @@ onMounted(() => {
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn variant="text" @click="createDialogOpen = false">Cancel</v-btn>
+          <v-btn
+            variant="text"
+            @click="createDialogOpen = false"
+          >
+            Cancel
+          </v-btn>
           <v-btn
             data-testid="create-list-dialog-button"
             color="primary"

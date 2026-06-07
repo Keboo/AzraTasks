@@ -148,56 +148,26 @@ public static class Resources
             return builder;
         }
 
-        public IResourceBuilder<TResource> WithUITests()
+        public IResourceBuilder<TResource> WithGenApiClientCommand()
         {
-            builder.WithCommand("RunUITests", "Run UI Tests", async ctx =>
+            builder.WithCommand("GenApiClient", "Generate API Client", async ctx =>
             {
                 if (!builder.Resource.TryGetEndpoints(out var endpoints) || endpoints.FirstOrDefault() is not { } endpoint)
                 {
-                    return CommandResults.Failure("No external HTTP endpoint available for UI tests");
+                    return CommandResults.Failure("No external HTTP endpoint available to use to generate the API client from");
                 }
-                string baseUrl = $"{endpoint.UriScheme}://{endpoint.TargetHost}:{endpoint.Port}";
-#pragma warning disable ASPIREINTERACTION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-                var interactionService = ctx.ServiceProvider.GetRequiredService<IInteractionService>();
-                InteractionInput headlessInput = new()
-                {
-                    Name = "Headless?",
-                    InputType = InputType.Boolean,
-                    Value = bool.TrueString
-                };
-                InteractionInput baseUrlInput = new()
-                {
-                    Name = "Base URL",
-                    InputType = InputType.Text,
-                    Value = baseUrl
-                };
-                var result = await interactionService.PromptInputsAsync("Testing", "Run the UI tests", [
-                    headlessInput,
-                    baseUrlInput
-                ]);
-                if (result.Canceled) return CommandResults.Canceled();
-#pragma warning restore ASPIREINTERACTION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
                 ProcessStartInfo psi = new()
                 {
-                    FileName = "dotnet",
+                    FileName = "npm",
                     ArgumentList = {
                         "run",
-                        "--no-build",
-                        "--project",
-                        "AzraTasks.UITests\\AzraTasks.UITests.csproj"
+                        "openapi"
                     },
-                    WorkingDirectory = GetSolutionDirectory()?.FullName,
-                    EnvironmentVariables =
-                    {
-                        { "TEST_BASE_URL", baseUrlInput.Value },
-                        // Invert the boolean: if headless is True, don't set HEADLESS (defaults to true)
-                        // if headless is False, set HEADLESS=false to run in headed mode
-                        { "HEADLESS", headlessInput.Value?.Equals(bool.FalseString, StringComparison.OrdinalIgnoreCase) == true ? "false" : "" }
-                    }
+                    WorkingDirectory = Path.Combine(GetSolutionDirectory()!.FullName, "AzraTasks.Web"),
                 };
 
                 bool processResult = await builder.Resource.ExecuteProcessAsync(ctx.ServiceProvider, psi);
-                return processResult ? CommandResults.Success() : CommandResults.Failure("UI Tests did not complete successfully");
+                return processResult ? CommandResults.Success() : CommandResults.Failure("Failed to generate API client");
             }, new CommandOptions()
             {
                 IconName = "ChevronDoubleRight",
@@ -206,17 +176,6 @@ public static class Resources
                         ? ResourceCommandState.Enabled : ResourceCommandState.Disabled
             });
             return builder;
-        }
-    }
-
-    extension(IResourceBuilder<SqlServerServerResource> sql)
-    {
-        public IResourceBuilder<SqlServerDatabaseResource> AddSqlDatabase()
-        {
-            var database = sql.AddDatabase("AzraTasks-db");
-
-            
-            return database;
         }
     }
 

@@ -15,11 +15,27 @@ function goToPrimaryAction() {
 </script>
 
 <template>
-  <v-row align="center" justify="center">
-    <v-col cols="12" md="10" lg="8">
-      <v-sheet rounded="xl" color="surface" elevation="2" class="pa-8 pa-md-12">
-        <div class="text-overline text-primary mb-4">Q&amp;A out, TODOs in</div>
-        <h1 class="text-h3 font-weight-bold mb-4">Keep your work in one clean, private list app.</h1>
+  <v-row
+    align="center"
+    justify="center"
+  >
+    <v-col
+      cols="12"
+      md="10"
+      lg="8"
+    >
+      <v-sheet
+        rounded="xl"
+        color="surface"
+        elevation="2"
+        class="pa-8 pa-md-12"
+      >
+        <div class="text-overline text-primary mb-4">
+          Q&amp;A out, TODOs in
+        </div>
+        <h1 class="text-h3 font-weight-bold mb-4">
+          Keep your work in one clean, private list app.
+        </h1>
         <p class="text-body-1 text-medium-emphasis mb-8">
           AzraTasks now focuses on personal TODO lists. Create lists, add tasks, and track completion
           without the old room and question workflow getting in the way.

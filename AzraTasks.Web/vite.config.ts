@@ -1,4 +1,3 @@
-import { heyApiPlugin } from '@hey-api/vite-plugin';
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
@@ -19,9 +18,6 @@ const backendUrl = process.env.BACKEND_URL
   || process.env.services__backend__https__0 
   || 'https://localhost:5001'
 
-const openApiInput = new URL('/swagger/v1/swagger.json', backendUrl).toString();
-
-
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -30,13 +26,7 @@ export default defineConfig({
     }),
     vuetify({
       autoImport: true,
-    }),
-    heyApiPlugin({
-      config: {
-        input: openApiInput,
-        output: 'src/services/api',
-      },
-    }),
+    })
   ],
   resolve: {
     alias: {

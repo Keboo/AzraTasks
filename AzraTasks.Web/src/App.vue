@@ -23,8 +23,14 @@ async function handleLogout() {
 
 <template>
   <v-app>
-    <v-app-bar color="primary" density="comfortable">
-      <v-app-bar-title class="cursor-pointer" @click="router.push({ name: 'home' })">
+    <v-app-bar
+      color="primary"
+      density="comfortable"
+    >
+      <v-app-bar-title
+        class="cursor-pointer"
+        @click="router.push({ name: 'home' })"
+      >
         AzraTasks
       </v-app-bar-title>
 

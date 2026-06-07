@@ -38,11 +38,26 @@ async function submit() {
 
 <template>
   <v-row justify="center">
-    <v-col cols="12" sm="10" md="6" lg="4">
-      <v-card rounded="xl" elevation="2">
-        <v-card-title class="text-h5 pt-6 px-6">Create account</v-card-title>
+    <v-col
+      cols="12"
+      sm="10"
+      md="6"
+      lg="4"
+    >
+      <v-card
+        rounded="xl"
+        elevation="2"
+      >
+        <v-card-title class="text-h5 pt-6 px-6">
+          Create account
+        </v-card-title>
         <v-card-text class="px-6">
-          <v-alert v-if="errorMessage" type="error" variant="tonal" class="mb-4">
+          <v-alert
+            v-if="errorMessage"
+            type="error"
+            variant="tonal"
+            class="mb-4"
+          >
             {{ errorMessage }}
           </v-alert>
 
