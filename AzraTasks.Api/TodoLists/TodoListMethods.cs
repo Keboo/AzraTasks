@@ -132,9 +132,9 @@ public sealed record UpdateTodoItemRequest(string Title);
 
 public sealed record SetTodoItemCompletionRequest(bool IsCompleted);
 
-public sealed record TodoListDto(Guid Id, string Name, DateTimeOffset CreatedDate)
+public sealed record TodoListDto(Guid Id, string Name, DateTimeOffset CreatedDate, int? ItemCount)
 {
-    public static TodoListDto FromList(TodoList list) => new(list.Id, list.Name, list.CreatedDate);
+    public static TodoListDto FromList(TodoList list) => new(list.Id, list.Name, list.CreatedDate, list.Items.Count);
 }
 
 public sealed record TodoItemDto(

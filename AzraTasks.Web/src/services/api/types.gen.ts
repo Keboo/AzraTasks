@@ -50,6 +50,7 @@ export type TodoListDto = {
     id?: string;
     name?: string | null;
     createdDate?: string;
+    itemCount?: number | null;
 };
 
 export type UpdateTodoItemRequest = {

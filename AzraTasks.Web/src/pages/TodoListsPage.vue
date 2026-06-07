@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+import ListCard from '@/components/ListCard.vue'
 import {
   createList as createListApi,
   deleteList as deleteListApi,
@@ -77,7 +78,7 @@ onMounted(() => {
     <div class="d-flex flex-wrap justify-space-between align-center ga-4">
       <div>
         <h1 class="text-h4 mb-2">
-          My TODO lists
+          My lists
         </h1>
         <p class="text-body-1 text-medium-emphasis">
           Organize tasks into focused lists and keep progress moving.
@@ -118,36 +119,11 @@ onMounted(() => {
         md="6"
         lg="4"
       >
-        <v-card
-          data-testid="todo-list-card"
-          rounded="xl"
-          elevation="1"
-        >
-          <v-card-title class="text-h6">
-            {{ list.name }}
-          </v-card-title>
-          <v-card-subtitle>
-            Created {{ new Date(list.createdDate!).toLocaleString() }}
-          </v-card-subtitle>
-          <v-card-actions>
-            <v-btn
-              color="primary"
-              variant="text"
-              @click="router.push({ name: 'list', params: { listId: list.id } })"
-            >
-              Open
-            </v-btn>
-            <v-spacer />
-            <v-btn
-              color="error"
-              variant="text"
-              :loading="deletingListId === list.id"
-              @click="removeList(list.id!)"
-            >
-              Delete
-            </v-btn>
-          </v-card-actions>
-        </v-card>
+        <ListCard
+          :list="list"
+          @open="(id) => router.push({ name: 'list', params: { listId: id } })"
+          @remove="removeList"
+        />
       </v-col>
 
       <v-col

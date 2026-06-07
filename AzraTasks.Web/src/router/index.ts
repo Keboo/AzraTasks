@@ -2,8 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import { useAuth } from '@/composables/useAuth'
 import HomePage from '@/pages/HomePage.vue'
-import LoginPage from '@/pages/LoginPage.vue'
-import RegisterPage from '@/pages/RegisterPage.vue'
+import AuthPage from '@/pages/AuthPage.vue'
 import TodoListPage from '@/pages/TodoListPage.vue'
 import TodoListsPage from '@/pages/TodoListsPage.vue'
 
@@ -16,15 +15,9 @@ const router = createRouter({
       component: HomePage,
     },
     {
-      path: '/login',
-      name: 'login',
-      component: LoginPage,
-      meta: { guestOnly: true },
-    },
-    {
-      path: '/register',
-      name: 'register',
-      component: RegisterPage,
+      path: '/auth',
+      name: 'auth',
+      component: AuthPage,
       meta: { guestOnly: true },
     },
     {

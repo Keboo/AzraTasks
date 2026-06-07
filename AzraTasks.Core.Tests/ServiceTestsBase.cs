@@ -38,12 +38,12 @@ public abstract class ServiceTestsBase
         return user;
     }
 
-    protected async Task<TodoList> CreateTodoList(string userId, string friendlyName = "Test Room")
+    protected async Task<TodoList> CreateTodoList(string userId, string name = "Test List")
     {
         var list = new TodoList
         {
             Id = Guid.NewGuid(),
-            Name = friendlyName,
+            Name = name,
             CreatedById = userId,
             CreatedDate = DateTimeOffset.UtcNow
         };
