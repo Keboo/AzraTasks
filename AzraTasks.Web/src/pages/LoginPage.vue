@@ -3,6 +3,7 @@ import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { useAuth } from '@/composables/useAuth'
+import type { ProblemDetails } from '@/services/api'
 
 const auth = useAuth()
 const route = useRoute()
@@ -25,7 +26,8 @@ async function submit() {
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/lists'
     await router.push(redirect)
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Unable to sign in.'
+    const problem = error as ProblemDetails
+    errorMessage.value = problem.detail ?? 'Unable to sign in.'
   }
 }
 </script>

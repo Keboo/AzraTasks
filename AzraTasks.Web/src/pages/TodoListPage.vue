@@ -2,17 +2,24 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { todoApi } from '@/services/todoApi'
-import type { TodoItem, TodoList } from '@/types'
+import {
+  createItem,
+  deleteItem as deleteItemApi,
+  getItems,
+  getList,
+  setItemCompletion,
+  updateItem,
+} from '@/services/api'
+import type { TodoItemDto, TodoListDto } from '@/services/api'
 
 const route = useRoute()
 const router = useRouter()
 
-const list = ref<TodoList | null>(null)
-const items = ref<TodoItem[]>([])
+const list = ref<TodoListDto | null>(null)
+const items = ref<TodoItemDto[]>([])
 const loading = ref(false)
 const saving = ref(false)
-const editingItem = ref<TodoItem | null>(null)
+const editingItem = ref<TodoItemDto | null>(null)
 const editedTitle = ref('')
 const newItemTitle = ref('')
 const errorMessage = ref('')
@@ -38,13 +45,13 @@ async function loadList() {
   errorMessage.value = ''
 
   try {
-    const [loadedList, loadedItems] = await Promise.all([
-      todoApi.getList(listId.value),
-      todoApi.getItems(listId.value),
+    const [listResult, itemsResult] = await Promise.all([
+      getList({ path: { listId: listId.value }, throwOnError: true }),
+      getItems({ path: { listId: listId.value }, throwOnError: true }),
     ])
 
-    list.value = loadedList
-    items.value = loadedItems
+    list.value = listResult.data
+    items.value = itemsResult.data
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Unable to load the list.'
   } finally {
@@ -61,7 +68,11 @@ async function addItem() {
   errorMessage.value = ''
 
   try {
-    const item = await todoApi.createItem(listId.value, { title: newItemTitle.value })
+    const { data: item } = await createItem({
+      path: { listId: listId.value },
+      body: { title: newItemTitle.value },
+      throwOnError: true,
+    })
     items.value = [item, ...items.value]
     newItemTitle.value = ''
   } catch (error) {
@@ -71,14 +82,16 @@ async function addItem() {
   }
 }
 
-async function toggleCompletion(item: TodoItem) {
+async function toggleCompletion(item: TodoItemDto) {
   if (!listId.value) {
     return
   }
 
   try {
-    const updated = await todoApi.setItemCompletion(listId.value, item.id, {
-      isCompleted: !item.isCompleted,
+    const { data: updated } = await setItemCompletion({
+      path: { listId: listId.value, itemId: item.id! },
+      body: { isCompleted: !item.isCompleted },
+      throwOnError: true,
     })
 
     items.value = items.value
@@ -89,9 +102,9 @@ async function toggleCompletion(item: TodoItem) {
   }
 }
 
-function openEditDialog(item: TodoItem) {
+function openEditDialog(item: TodoItemDto) {
   editingItem.value = item
-  editedTitle.value = item.title
+  editedTitle.value = item.title ?? ''
 }
 
 async function saveEdit() {
@@ -103,8 +116,10 @@ async function saveEdit() {
   errorMessage.value = ''
 
   try {
-    const updated = await todoApi.updateItem(listId.value, editingItem.value.id, {
-      title: editedTitle.value,
+    const { data: updated } = await updateItem({
+      path: { listId: listId.value, itemId: editingItem.value.id! },
+      body: { title: editedTitle.value },
+      throwOnError: true,
     })
 
     items.value = items.value
@@ -120,25 +135,28 @@ async function saveEdit() {
   }
 }
 
-async function deleteItem(itemId: string) {
+async function removeItem(itemId: string) {
   if (!listId.value) {
     return
   }
 
   try {
-    await todoApi.deleteItem(listId.value, itemId)
+    await deleteItemApi({
+      path: { listId: listId.value, itemId },
+      throwOnError: true,
+    })
     items.value = items.value.filter((item) => item.id !== itemId)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Unable to delete the item.'
   }
 }
 
-function compareItems(left: TodoItem, right: TodoItem) {
+function compareItems(left: TodoItemDto, right: TodoItemDto) {
   if (left.isCompleted !== right.isCompleted) {
     return Number(left.isCompleted) - Number(right.isCompleted)
   }
 
-  return new Date(right.createdDate).getTime() - new Date(left.createdDate).getTime()
+  return new Date(right.createdDate!).getTime() - new Date(left.createdDate!).getTime()
 }
 
 watch(
@@ -240,7 +258,7 @@ onMounted(() => {
         </v-list-item-title>
         <v-list-item-subtitle>
           Updated
-          {{ new Date(item.lastModifiedDate ?? item.createdDate).toLocaleString() }}
+          {{ new Date(item.lastModifiedDate ?? item.createdDate!).toLocaleString() }}
         </v-list-item-subtitle>
 
         <template #append>
@@ -254,7 +272,7 @@ onMounted(() => {
               icon="mdi-delete"
               variant="text"
               color="error"
-              @click="deleteItem(item.id)"
+              @click="removeItem(item.id!)"
             />
           </div>
         </template>

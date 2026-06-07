@@ -1,10 +1,10 @@
 using System.Text;
 
-using AzraTasks.Auth;
+using AzraTasks.Api.Auth;
+using AzraTasks.Api.TodoLists;
 using AzraTasks.Core;
 using AzraTasks.Data;
-using AzraTasks.Middleware;
-using AzraTasks.TodoLists;
+using AzraTasks.Api.Middleware;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

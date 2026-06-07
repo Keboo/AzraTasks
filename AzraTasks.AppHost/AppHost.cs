@@ -7,18 +7,20 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var db = builder.AddSqliteDatabase();
 
-var backend = builder.AddProject<Projects.AzraTasks>("AzraTasks-backend")
+var backend = builder.AddProject<Projects.AzraTasks_Api>(Resources.Backend)
     .WithDependency(db, ConnectionStrings.DatabaseKey)
     .WithExternalHttpEndpoints()
     .WithGenApiClientCommand();
 
-var frontendApp = builder.AddJavaScriptApp(Resources.Frontend, "../AzraTasks.Web", "dev")
-    .WithNpm(install: true)
-    .WithHttpEndpoint(env: "PORT")
+#pragma warning disable ASPIREBROWSERLOGS001 
+var frontendApp = builder.AddViteApp(Resources.Frontend, "../AzraTasks.Web")
     .WithExternalHttpEndpoints()
     .WithDependency(backend)
+    .WithBrowserLogs()
     .WithEnvironment("VITE_BACKEND_HTTP", backend.GetEndpoint("http"))
-    .WithEnvironment("VITE_BACKEND_HTTPS", backend.GetEndpoint("https"));
+    .WithEnvironment("VITE_BACKEND_HTTPS", backend.GetEndpoint("https"))
+    ;
+#pragma warning restore ASPIREBROWSERLOGS001 
 
 if (builder.ExecutionContext.IsPublishMode)
 {

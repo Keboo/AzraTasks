@@ -9,6 +9,7 @@
     <PackageReference Include="Aspire.Hosting.Azure" />
     <PackageReference Include="Aspire.Hosting.Azure.AppContainers" />
     <PackageReference Include="Aspire.Hosting.Azure.Sql" />
+    <PackageReference Include="Aspire.Hosting.Browsers" />
     <PackageReference Include="Aspire.Hosting.JavaScript" />
     <PackageReference Include="CommunityToolkit.Aspire.Hosting.Sqlite" />
     <!--<PackageReference Include="CommunityToolkit.Aspire.Microsoft.Data.Sqlite" />-->
@@ -19,9 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AzraTasks.Api\AzraTasks.Api.csproj" />
     <ProjectReference Include="..\AzraTasks.Core\AzraTasks.Core.csproj" IsAspireProjectResource="false" />
     <ProjectReference Include="..\AzraTasks.Data\AzraTasks.Data.csproj" IsAspireProjectResource="false" />
-    <ProjectReference Include="..\AzraTasks\AzraTasks.csproj" />
   </ItemGroup>
 
 </Project>

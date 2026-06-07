@@ -36,10 +36,6 @@ IMPORTANT! Aspire is designed to capture rich logs and telemetry for all resourc
 1. _select apphost_; use this tool if working with multiple app hosts within a workspace.
 2. _list apphosts_; use this tool to get details about active app hosts.
 
-## Playwright MCP server
-
-The playwright MCP server has also been configured in this repository and you should use it to perform functional investigations of the resources defined in the app model as you work on the codebase. To get endpoints that can be used for navigation using the playwright MCP server use the list resources tool.
-
 ## Updating the app host
 The user may request that you update the Aspire apphost. You can do this using the `aspire update` command. This will update the apphost to the latest version and some of the Aspire specific packages in referenced projects, however you may need to manually update other packages in the solution to ensure compatibility. You can consider using the `dotnet-outdated` with the users consent. To install the `dotnet-outdated` tool use the following command:
 

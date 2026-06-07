@@ -1,7 +1,12 @@
 import { computed, reactive, readonly } from 'vue'
 
-import { apiClient } from '@/services/apiClient'
-import type { LoginRequest, RegisterRequest, UserInfo } from '@/types'
+import {
+  getApiAuthUser,
+  postApiAuthLogin,
+  postApiAuthLogout,
+  postApiAuthRegister,
+} from '@/services/api'
+import type { LoginRequest, RegisterRequest, UserInfo } from '@/services/api'
 
 type AuthState = {
   user: UserInfo | null
@@ -23,7 +28,7 @@ async function refreshUser() {
   state.loading = true
 
   try {
-    const user = await apiClient.get<UserInfo>('/api/auth/user')
+    const { data: user } = await getApiAuthUser({ throwOnError: true })
     state.user = normalizeUser(user)
   } catch {
     state.user = null
@@ -45,9 +50,8 @@ async function login(credentials: LoginRequest) {
   state.loading = true
 
   try {
-    const user = await apiClient.post<UserInfo>('/api/auth/login', credentials)
-    state.user = normalizeUser(user)
-    state.initialized = true
+    await postApiAuthLogin({ body: credentials, throwOnError: true })
+    await refreshUser()
   } finally {
     state.loading = false
   }
@@ -57,9 +61,8 @@ async function register(input: RegisterRequest) {
   state.loading = true
 
   try {
-    const user = await apiClient.post<UserInfo>('/api/auth/register', input)
-    state.user = normalizeUser(user)
-    state.initialized = true
+    await postApiAuthRegister({ body: input, throwOnError: true })
+    await refreshUser()
   } finally {
     state.loading = false
   }
@@ -69,7 +72,7 @@ async function logout() {
   state.loading = true
 
   try {
-    await apiClient.post('/api/auth/logout')
+    await postApiAuthLogout({ throwOnError: true })
     state.user = null
     state.initialized = true
   } finally {

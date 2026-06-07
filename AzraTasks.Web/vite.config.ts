@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { heyApiPlugin } from '@hey-api/vite-plugin';
 import vue from '@vitejs/plugin-vue'
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import path from 'path'
@@ -26,7 +27,13 @@ export default defineConfig({
     }),
     vuetify({
       autoImport: true,
-    })
+    }),
+    heyApiPlugin({
+      config: {
+        input: '../AzraTasks.Api/AzraTasks.Api.json',
+        output: 'src/services/api',
+      },
+    }),
   ],
   resolve: {
     alias: {

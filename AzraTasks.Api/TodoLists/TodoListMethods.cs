@@ -5,7 +5,7 @@ using AzraTasks.Data;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace AzraTasks.TodoLists;
+namespace AzraTasks.Api.TodoLists;
 
 public static class TodoListMethods
 {

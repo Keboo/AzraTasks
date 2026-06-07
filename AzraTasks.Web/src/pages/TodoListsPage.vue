@@ -2,12 +2,16 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { todoApi } from '@/services/todoApi'
-import type { TodoList } from '@/types'
+import {
+  createList as createListApi,
+  deleteList as deleteListApi,
+  getLists,
+} from '@/services/api'
+import type { TodoListDto } from '@/services/api'
 
 const router = useRouter()
 
-const lists = ref<TodoList[]>([])
+const lists = ref<TodoListDto[]>([])
 const loading = ref(false)
 const createDialogOpen = ref(false)
 const creating = ref(false)
@@ -20,7 +24,8 @@ async function loadLists() {
   errorMessage.value = ''
 
   try {
-    lists.value = await todoApi.getLists()
+    const { data } = await getLists({ throwOnError: true })
+    lists.value = data
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Unable to load your lists.'
   } finally {
@@ -33,7 +38,10 @@ async function createList() {
   errorMessage.value = ''
 
   try {
-    const list = await todoApi.createList({ name: newListName.value })
+    const { data: list } = await createListApi({
+      body: { name: newListName.value },
+      throwOnError: true,
+    })
     createDialogOpen.value = false
     newListName.value = ''
     lists.value = [list, ...lists.value]
@@ -45,12 +53,12 @@ async function createList() {
   }
 }
 
-async function deleteList(listId: string) {
+async function removeList(listId: string) {
   deletingListId.value = listId
   errorMessage.value = ''
 
   try {
-    await todoApi.deleteList(listId)
+    await deleteListApi({ path: { listId }, throwOnError: true })
     lists.value = lists.value.filter((list) => list.id !== listId)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Unable to delete the list.'
@@ -119,7 +127,7 @@ onMounted(() => {
             {{ list.name }}
           </v-card-title>
           <v-card-subtitle>
-            Created {{ new Date(list.createdDate).toLocaleString() }}
+            Created {{ new Date(list.createdDate!).toLocaleString() }}
           </v-card-subtitle>
           <v-card-actions>
             <v-btn
@@ -134,7 +142,7 @@ onMounted(() => {
               color="error"
               variant="text"
               :loading="deletingListId === list.id"
-              @click="deleteList(list.id)"
+              @click="removeList(list.id!)"
             >
               Delete
             </v-btn>

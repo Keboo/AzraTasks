@@ -14,6 +14,7 @@ namespace AzraTasks.AppHost;
 public static class Resources
 {
     public const string ContainerSuffixKey = "AzraTasks:ContainerSuffix";
+    public const string Backend = "AzraTasks-api";
     public const string Frontend = "AzraTasks-frontend";
     public const string Database = "AzraTasks-database";
 
@@ -158,7 +159,7 @@ public static class Resources
                 }
                 ProcessStartInfo psi = new()
                 {
-                    FileName = "npm",
+                    FileName = "pnpm",
                     ArgumentList = {
                         "run",
                         "openapi"

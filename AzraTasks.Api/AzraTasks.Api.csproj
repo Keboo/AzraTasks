@@ -6,16 +6,23 @@
     <SpaProxyServerUrl>http://localhost:5173</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>pnpm dev</SpaProxyLaunchCommand>
     <EnableDefaultRazorComponentItems>false</EnableDefaultRazorComponentItems>
+
+    <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
+    <OpenApiGenerateDocumentsOnBuild>true</OpenApiGenerateDocumentsOnBuild>
+    <OpenApiDocumentsDirectory>.</OpenApiDocumentsDirectory>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AzraTasks.Core\AzraTasks.Core.csproj" />
     <ProjectReference Include="..\AzraTasks.Data\AzraTasks.Data.csproj" />
     <ProjectReference Include="..\AzraTasks.ServiceDefaults\AzraTasks.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\AzraTasks.Web\AzraTasks.Web.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" />
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Server">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
 

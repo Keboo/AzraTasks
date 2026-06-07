@@ -1,4 +1,4 @@
-namespace AzraTasks.TodoLists;
+namespace AzraTasks.Api.TodoLists;
 
 public static class TodoListExtensions
 {

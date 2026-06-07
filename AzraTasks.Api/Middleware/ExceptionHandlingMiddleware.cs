@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text.Json;
 
-namespace AzraTasks.Middleware;
+namespace AzraTasks.Api.Middleware;
 
 /// <summary>
 /// Middleware to handle exceptions and return appropriate HTTP status codes

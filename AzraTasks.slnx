@@ -20,11 +20,11 @@
     <File Path=".github/workflows/build-and-deploy.yml" />
     <File Path=".github/workflows/deploy-infrastructure.yml" />
   </Folder>
+  <Project Path="AzraTasks.Api/AzraTasks.Api.csproj" />
   <Project Path="AzraTasks.AppHost/AzraTasks.AppHost.csproj" />
   <Project Path="AzraTasks.Core.Tests/AzraTasks.Core.Tests.csproj" />
   <Project Path="AzraTasks.Core/AzraTasks.Core.csproj" />
   <Project Path="AzraTasks.Data/AzraTasks.Data.csproj" />
   <Project Path="AzraTasks.ServiceDefaults/AzraTasks.ServiceDefaults.csproj" />
   <Project Path="AzraTasks.Web/AzraTasks.Web.csproj" />
-  <Project Path="AzraTasks/AzraTasks.csproj" />
 </Solution>

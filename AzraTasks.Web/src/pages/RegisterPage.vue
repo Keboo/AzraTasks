@@ -3,6 +3,7 @@ import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useAuth } from '@/composables/useAuth'
+import type { ProblemDetails } from '@/services/api'
 
 const auth = useAuth()
 const router = useRouter()
@@ -31,7 +32,8 @@ async function submit() {
     await auth.register(form)
     await router.push({ name: 'lists' })
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Unable to create your account.'
+    const problem = error as ProblemDetails
+    errorMessage.value = problem.detail ?? 'Unable to create your account.'
   }
 }
 </script>

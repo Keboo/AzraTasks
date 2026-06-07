@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateItemData, CreateItemResponses, CreateListData, CreateListResponses, DeleteItemData, DeleteItemResponses, DeleteListData, DeleteListResponses, GetApiAuthUserData, GetApiAuthUserResponses, GetItemsData, GetItemsResponses, GetListData, GetListErrors, GetListResponses, GetListsData, GetListsResponses, PostApiAuthLoginData, PostApiAuthLoginResponses, PostApiAuthLogoutData, PostApiAuthLogoutResponses, PostApiAuthRegisterData, PostApiAuthRegisterResponses, SetItemCompletionData, SetItemCompletionResponses, UpdateItemData, UpdateItemResponses } from './types.gen';
+import type { CreateItemData, CreateItemResponses, CreateListData, CreateListResponses, DeleteItemData, DeleteItemResponses, DeleteListData, DeleteListResponses, GetApiAuthUserData, GetApiAuthUserResponses, GetItemsData, GetItemsResponses, GetListData, GetListErrors, GetListResponses, GetListsData, GetListsResponses, PostApiAuthLoginData, PostApiAuthLoginErrors, PostApiAuthLoginResponses, PostApiAuthLogoutData, PostApiAuthLogoutResponses, PostApiAuthRegisterData, PostApiAuthRegisterErrors, PostApiAuthRegisterResponses, SetItemCompletionData, SetItemCompletionResponses, UpdateItemData, UpdateItemResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -18,7 +18,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
     meta?: Record<string, unknown>;
 };
 
-export const postApiAuthLogin = <ThrowOnError extends boolean = false>(options: Options<PostApiAuthLoginData, ThrowOnError>): RequestResult<PostApiAuthLoginResponses, unknown, ThrowOnError> => (options.client ?? client).post<PostApiAuthLoginResponses, unknown, ThrowOnError>({
+export const postApiAuthLogin = <ThrowOnError extends boolean = false>(options: Options<PostApiAuthLoginData, ThrowOnError>): RequestResult<PostApiAuthLoginResponses, PostApiAuthLoginErrors, ThrowOnError> => (options.client ?? client).post<PostApiAuthLoginResponses, PostApiAuthLoginErrors, ThrowOnError>({
     url: '/api/auth/login',
     ...options,
     headers: {
@@ -27,7 +27,7 @@ export const postApiAuthLogin = <ThrowOnError extends boolean = false>(options: 
     }
 });
 
-export const postApiAuthRegister = <ThrowOnError extends boolean = false>(options: Options<PostApiAuthRegisterData, ThrowOnError>): RequestResult<PostApiAuthRegisterResponses, unknown, ThrowOnError> => (options.client ?? client).post<PostApiAuthRegisterResponses, unknown, ThrowOnError>({
+export const postApiAuthRegister = <ThrowOnError extends boolean = false>(options: Options<PostApiAuthRegisterData, ThrowOnError>): RequestResult<PostApiAuthRegisterResponses, PostApiAuthRegisterErrors, ThrowOnError> => (options.client ?? client).post<PostApiAuthRegisterResponses, PostApiAuthRegisterErrors, ThrowOnError>({
     url: '/api/auth/register',
     ...options,
     headers: {

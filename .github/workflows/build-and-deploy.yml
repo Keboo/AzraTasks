@@ -81,9 +81,6 @@ jobs:
             --project AzraTasks.Data/AzraTasks.Data.csproj `
            --startup-project AzraTasks.AppHost/AzraTasks.AppHost.csproj
 
-      - name: Install Playwright browsers
-        run: pwsh AzraTasks.UITests/bin/Release/net10.0/playwright.ps1 install --with-deps
-
       # Microsoft Testing Platform can stop the run once 10 tests fail in CI:
       # https://learn.microsoft.com/dotnet/core/testing/microsoft-testing-platform-cli-options
       # To enable retries, add Microsoft.Testing.Extensions.Retry to the test project, then pass
@@ -91,15 +88,6 @@ jobs:
       # https://learn.microsoft.com/dotnet/core/testing/microsoft-testing-platform-retry#retry-1
       - name: Test
         run: dotnet test --no-build --configuration Release --verbosity normal --maximum-failed-tests 10
-
-      - name: Upload test failure screenshots
-        if: failure()
-        uses: actions/upload-artifact@v7
-        with:
-          name: test-failure-screenshots
-          path: '**/TestResults/screenshots/*.png'
-          if-no-files-found: ignore
-          retention-days: 7
 
       - name: Upload test failure logs
         if: failure()

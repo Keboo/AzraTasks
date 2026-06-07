@@ -1,3 +1,4 @@
+using System.Net;
 using System.Security.Claims;
 
 using AzraTasks.Data;
@@ -5,11 +6,11 @@ using AzraTasks.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 
-namespace AzraTasks.Auth;
+namespace AzraTasks.Api.Auth;
 
 public static class AuthMethods
 {
-    public static async Task<IResult> Login(
+    public static async Task<Results<Ok<UserInfo>, ProblemHttpResult>> Login(
         LoginRequest request,
         SignInManager<ApplicationUser> signInManager,
         UserManager<ApplicationUser> userManager)
@@ -17,9 +18,7 @@ public static class AuthMethods
         var user = await userManager.FindByEmailAsync(request.Email);
         if (user is null)
         {
-            return TypedResults.Json(
-                new { message = "Invalid email or password" },
-                statusCode: StatusCodes.Status401Unauthorized);
+            return TypedResults.Problem("Invalid email or password", statusCode: (int)HttpStatusCode.Unauthorized);
         }
 
         var result = await signInManager.PasswordSignInAsync(
@@ -39,12 +38,10 @@ public static class AuthMethods
             });
         }
 
-        return TypedResults.Json(
-            new { message = "Invalid email or password" },
-            statusCode: StatusCodes.Status401Unauthorized);
+        return TypedResults.Problem("Invalid email or password", statusCode: (int)HttpStatusCode.Unauthorized);
     }
 
-    public static async Task<IResult> Register(
+    public static async Task<Results<Ok<UserInfo>, ProblemHttpResult>> Register(
         RegisterRequest request,
         SignInManager<ApplicationUser> signInManager,
         UserManager<ApplicationUser> userManager)
@@ -76,8 +73,7 @@ public static class AuthMethods
             }
         }
 
-        return TypedResults.BadRequest(
-            new { errors = result.Errors.Select(e => e.Description) });
+        return TypedResults.Problem(string.Join(' ', result.Errors.Select(e => e.Description)), statusCode: (int)HttpStatusCode.BadRequest);
     }
 
     public static async Task<NoContent> Logout(SignInManager<ApplicationUser> signInManager)
