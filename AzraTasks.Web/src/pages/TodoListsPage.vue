@@ -15,8 +15,9 @@ const router = useRouter()
 const lists = ref<TodoListDto[]>([])
 const loading = ref(false)
 const createDialogOpen = ref(false)
+
 const creating = ref(false)
-const deletingListId = ref<string | null>(null)
+const deletingList = ref<TodoListDto | null>(null)
 const newListName = ref('')
 const errorMessage = ref('')
 
@@ -55,7 +56,6 @@ async function createList() {
 }
 
 async function removeList(listId: string) {
-  deletingListId.value = listId
   errorMessage.value = ''
 
   try {
@@ -64,7 +64,7 @@ async function removeList(listId: string) {
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Unable to delete the list.'
   } finally {
-    deletingListId.value = null
+    deletingList.value = null
   }
 }
 
@@ -121,8 +121,8 @@ onMounted(() => {
       >
         <ListCard
           :list="list"
-          @open="(id) => router.push({ name: 'list', params: { listId: id } })"
-          @remove="removeList"
+          @open="(list) => router.push({ name: 'list', params: { listId: list.id } })"
+          @remove="(list) => { deletingList = list; }"
         />
       </v-col>
 
@@ -164,6 +164,7 @@ onMounted(() => {
             label="List name"
             variant="outlined"
             autofocus
+            @keydown.enter="createList"
           />
         </v-card-text>
         <v-card-actions>
@@ -175,12 +176,41 @@ onMounted(() => {
             Cancel
           </v-btn>
           <v-btn
-            data-testid="create-list-dialog-button"
             color="primary"
             :loading="creating"
             @click="createList"
           >
             Create
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      max-width="480"
+      :model-value="deletingList !== null"
+      @update:model-value="(val) => { if (!val) deletingList = null }"
+    >
+      <v-card
+        v-if="deletingList"
+        rounded="xl"
+      >
+        <v-card-title>Delete list</v-card-title>
+        <v-card-text>
+          Are you sure you want to delete the list '{{ deletingList.name }}'?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            variant="text"
+            @click="deletingList = null"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            color="error"
+            @click="removeList(deletingList.id!)"
+          >
+            Delete
           </v-btn>
         </v-card-actions>
       </v-card>

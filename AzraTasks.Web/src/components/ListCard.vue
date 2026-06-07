@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import type { TodoListDto } from '@/services/api'
 
-defineProps<{ list: TodoListDto }>()
+const props = defineProps<{ list: TodoListDto }>()
 
 const emit = defineEmits<{
-  remove: [listId: string]
-  open: [listId: string]
+  remove: [list: TodoListDto]
+  open: [list: TodoListDto]
 }>()
+
+const handleDeleteClick = (event: MouseEvent) => {
+  event.stopPropagation()
+  emit('remove', props.list)
+}
 </script>
 
 <template>
@@ -14,6 +19,7 @@ const emit = defineEmits<{
     data-testid="todo-list-card"
     rounded="xl"
     elevation="1"
+    @click="emit('open', list)"
   >
     <v-card-title class="d-flex align-center">
       {{ list.name }} - ({{ list.itemCount }})
@@ -22,7 +28,7 @@ const emit = defineEmits<{
         color="error"
         icon="mdi-delete"
         variant="text"
-        @click="emit('remove', list.id!)"
+        @click="handleDeleteClick"
       />
     </v-card-title>
     <v-card-subtitle>
@@ -32,7 +38,7 @@ const emit = defineEmits<{
       <v-btn
         color="primary"
         variant="text"
-        @click="emit('open', list.id!)"
+        @click="emit('open', list)"
       >
         Open
       </v-btn>

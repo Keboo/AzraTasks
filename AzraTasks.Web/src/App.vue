@@ -17,54 +17,34 @@ onMounted(async () => {
 
 async function handleLogout() {
   await auth.logout()
-  await router.push({ name: 'login' })
+  await router.push({ name: 'home' })
 }
 </script>
 
 <template>
   <v-app>
     <v-app-bar
-      color="primary"
+      :elevation="0"
+      color="transparent"
       density="comfortable"
     >
       <v-app-bar-title
         class="cursor-pointer"
-        @click="router.push({ name: 'home' })"
+        @click="router.push({ name: 'auth' })"
       >
-        AzraTasks
+        Azra Tasks
       </v-app-bar-title>
 
       <template v-if="isAuthenticated">
         <span class="text-body-2 mr-4">{{ userLabel }}</span>
         <v-btn
-          data-testid="nav-lists-button"
-          variant="text"
-          @click="router.push({ name: 'lists' })"
-        >
-          My Lists
-        </v-btn>
-        <v-btn
           data-testid="nav-logout-button"
-          variant="text"
+          color="primary"
+          variant="outlined"
+          rounded="xl"
           @click="handleLogout"
         >
           Logout
-        </v-btn>
-      </template>
-      <template v-else>
-        <v-btn
-          data-testid="nav-login-button"
-          variant="text"
-          @click="router.push({ name: 'login' })"
-        >
-          Login
-        </v-btn>
-        <v-btn
-          data-testid="nav-register-button"
-          variant="text"
-          @click="router.push({ name: 'register' })"
-        >
-          Register
         </v-btn>
       </template>
     </v-app-bar>
