@@ -1,5 +1,4 @@
 using AzraTasks.Core.Todos;
-using AzraTasks.Core.Tests.QA;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +18,7 @@ public sealed class TodoListServiceTests : ServiceTestsBase
 
         await Assert.That(firstList.Name).IsEqualTo("Inbox");
         await Assert.That(secondList.Name).IsEqualTo("Inbox");
-        await Assert.That(firstList.CreatedBy!.Id).IsNotEqualTo(secondList.CreatedBy!.Id);
+        await Assert.That(firstList.CreatedById).IsNotEqualTo(secondList.CreatedById);
     }
 
     [Test]

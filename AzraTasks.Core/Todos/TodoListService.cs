@@ -41,7 +41,7 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
         {
             Id = Guid.NewGuid(),
             Name = normalizedName,
-            CreatedBy = await context.Users.FindAsync(userId),
+            CreatedById = userId,
             CreatedDate = DateTimeOffset.UtcNow
         };
 

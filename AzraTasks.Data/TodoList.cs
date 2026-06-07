@@ -11,6 +11,8 @@ public class TodoList
     [MaxLength(200)]
     public required string Name { get; set; }
 
+    [Required]
+    public required string CreatedById { get; set; }
     public ApplicationUser? CreatedBy { get; set; }
 
     public DateTimeOffset CreatedDate { get; set; } = DateTimeOffset.UtcNow;

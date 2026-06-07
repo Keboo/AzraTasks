@@ -1,6 +1,6 @@
 using AzraTasks.Data;
 
-namespace AzraTasks.Core.Tests.QA;
+namespace AzraTasks.Core.Tests;
 
 public abstract class ServiceTestsBase
 {
@@ -25,7 +25,7 @@ public abstract class ServiceTestsBase
     {
         var user = new ApplicationUser
         {
-            Id = userId,
+            Id = $"{userId}-{Guid.NewGuid()}",
             UserName = $"{userId}@example.com",
             Email = $"{userId}@example.com"
         };
@@ -44,7 +44,7 @@ public abstract class ServiceTestsBase
         {
             Id = Guid.NewGuid(),
             Name = friendlyName,
-            CreatedBy = await Mocker.InDbScopeAsync(async context => await context.Users.FindAsync(userId)),
+            CreatedById = userId,
             CreatedDate = DateTimeOffset.UtcNow
         };
 

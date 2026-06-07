@@ -9,7 +9,6 @@ public class TodoItem
 
     [Required]
     public required Guid ListId { get; set; }
-
     public TodoList? List { get; set; }
 
     [Required]
