@@ -10,21 +10,19 @@ namespace AzraTasks.Api.TodoLists;
 public static class TodoListMethods
 {
     public static async Task<Ok<IEnumerable<TodoListDto>>> GetLists(
-        ClaimsPrincipal user,
-        ITodoListService todoListService)
+        ITodoListService todoListService,
+        CancellationToken cancellationToken)
     {
-        var userId = GetUserId(user);
-        var lists = await todoListService.GetListsAsync(userId);
+        var lists = await todoListService.GetListsAsync(cancellationToken);
         return TypedResults.Ok(lists.Select(TodoListDto.FromList));
     }
 
     public static async Task<Results<Ok<TodoListDto>, NotFound>> GetList(
         Guid listId,
-        ClaimsPrincipal user,
-        ITodoListService todoListService)
+        ITodoListService todoListService,
+        CancellationToken cancellationToken)
     {
-        var userId = GetUserId(user);
-        var list = await todoListService.GetListByIdAsync(listId, userId);
+        var list = await todoListService.GetListByIdAsync(listId, cancellationToken);
 
         return list is null
             ? TypedResults.NotFound()
@@ -33,12 +31,10 @@ public static class TodoListMethods
 
     public static async Task<CreatedAtRoute<TodoListDto>> CreateList(
         CreateTodoListRequest request,
-        ClaimsPrincipal user,
         ITodoListService todoListService,
         CancellationToken cancellationToken)
     {
-        var userId = GetUserId(user);
-        var list = await todoListService.CreateListAsync(request.Name, userId, cancellationToken);
+        var list = await todoListService.CreateListAsync(request.Name, cancellationToken);
         var response = TodoListDto.FromList(list);
 
         return TypedResults.CreatedAtRoute(response, TodoListRoutes.GetList, new { listId = list.Id });
@@ -46,34 +42,29 @@ public static class TodoListMethods
 
     public static async Task<NoContent> DeleteList(
         Guid listId,
-        ClaimsPrincipal user,
         ITodoListService todoListService,
         CancellationToken cancellationToken)
     {
-        var userId = GetUserId(user);
-        await todoListService.DeleteListAsync(listId, userId, cancellationToken);
+        await todoListService.DeleteListAsync(listId, cancellationToken);
         return TypedResults.NoContent();
     }
 
     public static async Task<Ok<IEnumerable<TodoItemDto>>> GetItems(
         Guid listId,
-        ClaimsPrincipal user,
-        ITodoListService todoListService)
+        ITodoListService todoListService,
+        CancellationToken cancellationToken)
     {
-        var userId = GetUserId(user);
-        var items = await todoListService.GetItemsAsync(listId, userId);
+        var items = await todoListService.GetItemsAsync(listId, cancellationToken);
         return TypedResults.Ok(items.Select(TodoItemDto.FromTodoItem));
     }
 
     public static async Task<CreatedAtRoute<TodoItemDto>> CreateItem(
         Guid listId,
         CreateTodoItemRequest request,
-        ClaimsPrincipal user,
         ITodoListService todoListService,
         CancellationToken cancellationToken)
     {
-        var userId = GetUserId(user);
-        var item = await todoListService.CreateItemAsync(listId, request.Title, userId, cancellationToken);
+        var item = await todoListService.CreateItemAsync(listId, request.Title, cancellationToken);
         var response = TodoItemDto.FromTodoItem(item);
 
         return TypedResults.CreatedAtRoute(response, TodoListRoutes.GetItems, new { listId });
@@ -83,12 +74,10 @@ public static class TodoListMethods
         Guid listId,
         Guid itemId,
         UpdateTodoItemRequest request,
-        ClaimsPrincipal user,
         ITodoListService todoListService,
         CancellationToken cancellationToken)
     {
-        var userId = GetUserId(user);
-        var item = await todoListService.UpdateItemAsync(listId, itemId, request.Title, userId, cancellationToken);
+        var item = await todoListService.UpdateItemAsync(listId, itemId, request.Title, cancellationToken);
         return TypedResults.Ok(TodoItemDto.FromTodoItem(item));
     }
 
@@ -96,31 +85,21 @@ public static class TodoListMethods
         Guid listId,
         Guid itemId,
         SetTodoItemCompletionRequest request,
-        ClaimsPrincipal user,
         ITodoListService todoListService,
         CancellationToken cancellationToken)
     {
-        var userId = GetUserId(user);
-        var item = await todoListService.SetItemCompletedAsync(listId, itemId, request.IsCompleted, userId, cancellationToken);
+        var item = await todoListService.SetItemCompletedAsync(listId, itemId, request.IsCompleted, cancellationToken);
         return TypedResults.Ok(TodoItemDto.FromTodoItem(item));
     }
 
     public static async Task<NoContent> DeleteItem(
         Guid listId,
         Guid itemId,
-        ClaimsPrincipal user,
         ITodoListService todoListService,
         CancellationToken cancellationToken)
     {
-        var userId = GetUserId(user);
-        await todoListService.DeleteItemAsync(listId, itemId, userId, cancellationToken);
+        await todoListService.DeleteItemAsync(listId, itemId, cancellationToken);
         return TypedResults.NoContent();
-    }
-
-    private static string GetUserId(ClaimsPrincipal user)
-    {
-        return user.FindFirstValue(ClaimTypes.NameIdentifier)
-            ?? throw new UnauthorizedAccessException("User is not authenticated.");
     }
 }
 

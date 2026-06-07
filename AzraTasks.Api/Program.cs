@@ -9,6 +9,7 @@ using AzraTasks.Api.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using AzraTasks.Data.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +17,8 @@ builder.AddServiceDefaults()
     .AddDatabase()
     .AddTodo();
 
-// Add HTTP context accessor for SignalR authentication
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IUserIdProvider, HttpContextUserIdProvider>();
 
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();

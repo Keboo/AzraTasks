@@ -1,9 +1,12 @@
+using AzraTasks.Core.Auth;
 using AzraTasks.Core.Todos;
 using AzraTasks.Data;
+using AzraTasks.Data.Auth;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace AzraTasks.Core;
@@ -12,7 +15,14 @@ public static class DependencyInjection
 {
     public static TBuilder AddDatabase<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
-        builder.AddSqliteDbContext<ApplicationDbContext>(ConnectionStrings.DatabaseKey);
+        builder.AddSqliteDbContext<ApplicationDbContext>(ConnectionStrings.DatabaseKey, 
+            configureDbContextOptions: options =>
+            {
+                options.AddInterceptors(
+                    new TrackingBaseInterceptor(),
+                    new CreatedByUserInterceptor()
+                );
+            });
 
         if (builder.Environment.IsDevelopment())
         {
@@ -35,6 +45,8 @@ public static class DependencyInjection
         {
             builder.Services.AddHostedService<DatabaseMigrationService>();
         }
+
+        builder.Services.TryAddSingleton<IUserIdProvider, NullUserIdProvider>();
 
         return builder;
     }

@@ -6,30 +6,27 @@ namespace AzraTasks.Core.Todos;
 
 public class TodoListService(ApplicationDbContext context) : ITodoListService
 {
-    public async Task<IEnumerable<TodoList>> GetListsAsync(string userId)
+    public async Task<IEnumerable<TodoList>> GetListsAsync(CancellationToken cancellationToken)
     {
         return await context.TodoLists
-            .Include(x => x.CreatedBy)
-            .Where(x => x.CreatedBy!.Id == userId)
             .OrderByDescending(x => x.CreatedDate)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<TodoList?> GetListByIdAsync(Guid listId, string userId)
+    public async Task<TodoList?> GetListByIdAsync(Guid listId, CancellationToken cancellationToken)
     {
         return await context.TodoLists
             .Include(x => x.CreatedBy)
-            .FirstOrDefaultAsync(x => x.Id == listId && x.CreatedBy!.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == listId, cancellationToken);
     }
 
-    public async Task<TodoList> CreateListAsync(string name, string userId, CancellationToken cancellationToken)
+    public async Task<TodoList> CreateListAsync(string name, CancellationToken cancellationToken)
     {
         var normalizedName = NormalizeListName(name);
 
         var exists = await context.TodoLists
-            .Include(x => x.CreatedBy)
             .AnyAsync(
-                list => list.CreatedBy!.Id == userId && EF.Functions.Like(list.Name, normalizedName),
+                list => EF.Functions.Like(list.Name, normalizedName),
                 cancellationToken);
 
         if (exists)
@@ -39,10 +36,7 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
 
         var list = new TodoList
         {
-            Id = Guid.NewGuid(),
-            Name = normalizedName,
-            CreatedById = userId,
-            CreatedDate = DateTimeOffset.UtcNow
+            Name = normalizedName
         };
 
         context.TodoLists.Add(list);
@@ -51,14 +45,11 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
         return list;
     }
 
-    public async Task DeleteListAsync(Guid listId, string userId, CancellationToken cancellationToken)
+    public async Task DeleteListAsync(Guid listId, CancellationToken cancellationToken)
     {
         var list = await context.TodoLists
             .Include(l => l.Items)
-            .Include(l => l.CreatedBy)
-            .FirstOrDefaultAsync(
-                l => l.Id == listId && l.CreatedBy!.Id == userId,
-                cancellationToken)
+            .FirstOrDefaultAsync(l => l.Id == listId, cancellationToken)
             ?? throw new InvalidOperationException("Todo list not found.");
 
         context.TodoItems.RemoveRange(list.Items);
@@ -66,34 +57,24 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<TodoItem>> GetItemsAsync(Guid listId, string userId)
+    public async Task<IEnumerable<TodoItem>> GetItemsAsync(Guid listId, CancellationToken cancellationToken)
     {
-        var listExists = await context.TodoLists
-            .AnyAsync(list => list.Id == listId && list.CreatedById == userId);
-
-        if (!listExists)
-        {
-            throw new InvalidOperationException("Todo list not found.");
-        }
-
         return await context.TodoItems
             .Where(item => item.ListId == listId)
             .OrderByDescending(item => item.CreatedDate)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<TodoItem> CreateItemAsync(Guid listId, string title, string userId, CancellationToken cancellationToken)
+    public async Task<TodoItem> CreateItemAsync(Guid listId, string title, CancellationToken cancellationToken)
     {
         var normalizedTitle = NormalizeItemTitle(title);
 
-        await EnsureOwnedListExistsAsync(context, listId, userId, cancellationToken);
+        await EnsureOwnedListExistsAsync(context, listId, cancellationToken);
 
         var question = new TodoItem
         {
-            Id = Guid.NewGuid(),
             ListId = listId,
             Text = normalizedTitle,
-            CreatedDate = DateTimeOffset.UtcNow
         };
 
         context.TodoItems.Add(question);
@@ -102,11 +83,11 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
         return question;
     }
 
-    public async Task<TodoItem> UpdateItemAsync(Guid listId, Guid itemId, string title, string userId, CancellationToken cancellationToken)
+    public async Task<TodoItem> UpdateItemAsync(Guid listId, Guid itemId, string title, CancellationToken cancellationToken)
     {
         var normalizedTitle = NormalizeItemTitle(title);
 
-        var item = await GetOwnedItemAsync(context, listId, itemId, userId, cancellationToken);
+        var item = await GetOwnedItemAsync(context, listId, itemId, cancellationToken);
 
         item.Text = normalizedTitle;
         item.LastModifiedDate = DateTimeOffset.UtcNow;
@@ -115,9 +96,9 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
         return item;
     }
 
-    public async Task<TodoItem> SetItemCompletedAsync(Guid listId, Guid itemId, bool isCompleted, string userId, CancellationToken cancellationToken)
+    public async Task<TodoItem> SetItemCompletedAsync(Guid listId, Guid itemId, bool isCompleted, CancellationToken cancellationToken)
     {
-        var item = await GetOwnedItemAsync(context, listId, itemId, userId, cancellationToken);
+        var item = await GetOwnedItemAsync(context, listId, itemId, cancellationToken);
 
         item.IsComplete = isCompleted;
         item.LastModifiedDate = DateTimeOffset.UtcNow;
@@ -126,9 +107,9 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
         return item;
     }
 
-    public async Task DeleteItemAsync(Guid listId, Guid itemId, string userId, CancellationToken cancellationToken)
+    public async Task DeleteItemAsync(Guid listId, Guid itemId, CancellationToken cancellationToken)
     {
-        var item = await GetOwnedItemAsync(context, listId, itemId, userId, cancellationToken);
+        var item = await GetOwnedItemAsync(context, listId, itemId, cancellationToken);
 
         context.TodoItems.Remove(item);
         await context.SaveChangesAsync(cancellationToken);
@@ -171,12 +152,11 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
     private static async Task EnsureOwnedListExistsAsync(
         ApplicationDbContext context,
         Guid listId,
-        string userId,
         CancellationToken cancellationToken)
     {
         var listExists = await context.TodoLists
             .Include(x => x.CreatedBy)
-            .AnyAsync(x => x.Id == listId && x.CreatedBy!.Id == userId, cancellationToken);
+            .AnyAsync(x => x.Id == listId, cancellationToken);
 
         if (!listExists)
         {
@@ -188,17 +168,12 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
         ApplicationDbContext context,
         Guid listId,
         Guid itemId,
-        string userId,
         CancellationToken cancellationToken)
     {
         var item = await context.TodoItems
             .Include(item => item.List)
             .AsTracking()
-            .FirstOrDefaultAsync(
-                item => item.Id == itemId
-                    && item.ListId == listId
-                    && item.List!.CreatedBy!.Id == userId,
-                cancellationToken);
+            .FirstOrDefaultAsync(item => item.Id == itemId && item.ListId == listId, cancellationToken);
 
         return item ?? throw new InvalidOperationException("Todo item not found.");
     }
