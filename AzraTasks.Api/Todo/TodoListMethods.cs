@@ -1,11 +1,9 @@
-using System.Security.Claims;
-
 using AzraTasks.Core.Todos;
 using AzraTasks.Data;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace AzraTasks.Api.TodoLists;
+namespace AzraTasks.Api.Todo;
 
 public static class TodoListMethods
 {

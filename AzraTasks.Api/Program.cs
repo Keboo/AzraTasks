@@ -1,7 +1,6 @@
 using System.Text;
 
 using AzraTasks.Api.Auth;
-using AzraTasks.Api.TodoLists;
 using AzraTasks.Core;
 using AzraTasks.Data;
 using AzraTasks.Api.Middleware;
@@ -10,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using AzraTasks.Data.Auth;
+using AzraTasks.Api.Todo;
 
 var builder = WebApplication.CreateBuilder(args);
 

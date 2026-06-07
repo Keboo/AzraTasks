@@ -87,6 +87,8 @@ async function toggleCompletion(item: TodoItemDto) {
     return
   }
 
+  errorMessage.value = ''
+
   try {
     const { data: updated } = await setItemCompletion({
       path: { listId: listId.value, itemId: item.id! },
@@ -182,27 +184,30 @@ onMounted(() => {
         >
           &larr; Back to lists
         </v-btn>
-        <h1 class="text-h4">
-          {{ list?.name ?? 'Loading list...' }}
-        </h1>
-        <p class="text-body-1 text-medium-emphasis">
-          {{ completedCount }} of {{ items.length }} tasks completed
-        </p>
       </div>
     </div>
-
-    <v-alert
-      v-if="errorMessage"
-      type="error"
-      variant="tonal"
-    >
-      {{ errorMessage }}
-    </v-alert>
 
     <v-card
       rounded="xl"
       elevation="1"
     >
+      <v-card-title>
+        <div>
+          <h1 class="text-h4">
+            {{ list?.name ?? 'Loading list...' }}
+          </h1>
+          <p class="text-body-1 text-medium-emphasis">
+            {{ completedCount }} of {{ items.length }} tasks completed
+          </p>
+          <v-alert
+            v-if="errorMessage"
+            type="error"
+            variant="tonal"
+          >
+            {{ errorMessage }}
+          </v-alert>
+        </div>
+      </v-card-title>
       <v-card-text class="d-flex flex-wrap ga-4 align-center">
         <v-text-field
           v-model="newItemTitle"
@@ -237,6 +242,7 @@ onMounted(() => {
       lines="two"
       bg-color="transparent"
       class="d-flex flex-column ga-3 pa-0"
+      style="overflow: visible"
     >
       <v-list-item
         v-for="item in items"
@@ -244,6 +250,7 @@ onMounted(() => {
         data-testid="todo-item-row"
         rounded="xl"
         class="bg-surface elevation-1"
+        @click="toggleCompletion(item)"
       >
         <template #prepend>
           <v-checkbox-btn
@@ -282,10 +289,9 @@ onMounted(() => {
         v-if="items.length == 0"
         rounded="xl"
         class="bg-surface elevation-1"
-      >
-        <v-list-item-title>No tasks yet</v-list-item-title>
-        <v-list-item-subtitle>Add your first task above.</v-list-item-subtitle>
-      </v-list-item>
+        :title="'No tasks yet'"
+        :subtitle="'Add your first task above.'"
+      />
     </v-list>
 
     <v-dialog
