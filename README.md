@@ -21,11 +21,24 @@ If the [Aspire CLI](https://aspire.dev/reference/cli/overview/) is installed, yo
 - Press F5 to start the application
 
 ## Launch with Visual Studio Code
-- 
+- Open the repository root in VS Code.
+- On the Run and Debug tab ensure the `AzraTasks.AppHost` launch profile is selected and press F5.
 
 ## Launch from the terminal
 From the root of the repository run `dotnet build` then `dotnet run --project AzraTasks.AppHost/AzraTasks.AppHost.csproj`
 
+### Navigating the Aspire Dashboard
+For most of the launch methods above the Aspire dashboard will open in your default browser. For terminal output, you will likely see output similar to the following:
+
+![Aspire console output](images/AspireConsoleOutput.png)
+
+To manually launch the Aspire dashboard, click/copy the Login URL into a browser to launch the Aspire dashboard.
+
+The Aspire Dashboard provides many features, but for simply getting into the running app, click on the link for the frontend resource as shown here:
+
+![Aspire dashboard](images/AspireDashboard.png)
+
+Alternatively if you would like Aspire to also capture browser logs you can launch a browser with the button indicated above.
 
 # A high-level tour
 
