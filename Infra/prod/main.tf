@@ -45,8 +45,8 @@ module "backend_container_app" {
   env_vars = {
     AZURE_CLIENT_ID                       = azurerm_user_assigned_identity.app_identity.client_id
     APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights.application_insights.connection_string
-    ConnectionStrings__Database           = "Data Source=/tmp/azratasks.db"
-    SkipMigrationsOnStartup               = "false" // Doing migrations on startup for now.
+    ConnectionStrings__Database           = "Data Source=/tmp/azratasks.db;Cache=Shared;Mode=ReadWriteCreate"
+    RunMigrationsOnStartup                = "true" // Doing migrations on startup for now.
     # CORS: Allow the Static Web App origin
     AllowedOrigins__0 = "https://${module.static_web_app.default_host_name}"
   }

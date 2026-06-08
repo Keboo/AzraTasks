@@ -38,10 +38,16 @@ public static class DependencyInjection
             .AddSignInManager()
             .AddDefaultTokenProviders();
 
-        // Only run migrations on startup when explicitly enabled (e.g., during: azd up)
+        // Support both migration flags while preferring the explicit positive form.
+        // RunMigrationsOnStartup=true enables startup migrations.
+        // SkipMigrationsOnStartup=true disables startup migrations (legacy inverse flag).
+        // Default is disabled when neither setting is provided.
+        bool? runMigrationsOnStartup = builder.Configuration.GetValue<bool?>("RunMigrationsOnStartup");
+
         // Applying migrations on startup is not recommended for production scenarios.
         // See: https://learn.microsoft.com/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli&WT.mc_id=DT-MVP-5003472
-        if (builder.Configuration.GetValue<bool>("SkipMigrationsOnStartup"))
+        if (runMigrationsOnStartup != false && 
+            builder.Configuration.GetConnectionString(ConnectionStrings.DatabaseKey) is { Length: > 0 })
         {
             builder.Services.AddHostedService<DatabaseMigrationService>();
         }

@@ -11,7 +11,7 @@ var backend = builder.AddProject<Projects.AzraTasks_Api>(Resources.Backend)
     .WithGenApiClientCommand()
     //NB: We handle the migrations in the database resource.
     //Setting this to false to avoid wastefully applying migrations twice.
-    .WithEnvironment("SkipMigrationsOnStartup", bool.TrueString);
+    .WithEnvironment("RunMigrationsOnStartup", bool.FalseString);
 
 #pragma warning disable ASPIREBROWSERLOGS001 // WithBrowserLogs is still experimental
 var frontendApp = builder.AddViteApp(Resources.Frontend, "../src/AzraTasks.Web")
