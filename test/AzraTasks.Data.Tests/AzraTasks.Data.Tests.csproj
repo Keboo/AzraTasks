@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AzraTasks.Core\AzraTasks.Core.csproj" />
+    <ProjectReference Include="..\..\src\AzraTasks.Data\AzraTasks.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>

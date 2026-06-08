@@ -23,7 +23,7 @@ defaults:
 env:
   DOTNET_VERSION: '10.0.x'
   NODE_VERSION: '26.x'
-  FRONTEND_PROJECT_PATH: 'AzraTasks.Web'
+  FRONTEND_PROJECT_PATH: 'src/AzraTasks.Web'
   TERRAFORM_VERSION: '1.15.4'
 
 jobs:
@@ -78,7 +78,7 @@ jobs:
         run: |
           dotnet ef migrations has-pending-model-changes `
             --configuration Release `
-            --project AzraTasks.Data/AzraTasks.Data.csproj `
+            --project src/AzraTasks.Data/AzraTasks.Data.csproj `
            --startup-project AzraTasks.AppHost/AzraTasks.AppHost.csproj
 
       # Microsoft Testing Platform can stop the run once 10 tests fail in CI:
@@ -108,7 +108,7 @@ jobs:
             --self-contained `
             --no-build `
             --configuration Release `
-            --project AzraTasks.Data/AzraTasks.Data.csproj `
+            --project src/AzraTasks.Data/AzraTasks.Data.csproj `
             --startup-project .\AzraTasks.AppHost\AzraTasks.AppHost.csproj `
             --output efbundle
 
@@ -252,7 +252,7 @@ jobs:
           az acr login --name ${{ needs.get-infrastructure-outputs.outputs.acr_login_server }}
 
       - name: dotnet publish
-        run: dotnet publish .\AzraTasks.Api\AzraTasks.Api.csproj -r linux-x64 --self-contained -t:PublishContainer -p:ContainerRegistry=${{ needs.get-infrastructure-outputs.outputs.acr_login_server }} -p:ContainerImageTags="${{ github.sha }}"
+        run: dotnet publish .\src\AzraTasks.Api\AzraTasks.Api.csproj -r linux-x64 --self-contained -t:PublishContainer -p:ContainerRegistry=${{ needs.get-infrastructure-outputs.outputs.acr_login_server }} -p:ContainerImageTags="${{ github.sha }}"
 
       - name: Update Container App
         run: |

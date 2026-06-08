@@ -13,7 +13,7 @@ var backend = builder.AddProject<Projects.AzraTasks_Api>(Resources.Backend)
     .WithGenApiClientCommand();
 
 #pragma warning disable ASPIREBROWSERLOGS001 
-var frontendApp = builder.AddViteApp(Resources.Frontend, "../AzraTasks.Web")
+var frontendApp = builder.AddViteApp(Resources.Frontend, "../src/AzraTasks.Web")
     .WithExternalHttpEndpoints()
     .WithDependency(backend)
     .WithBrowserLogs()
