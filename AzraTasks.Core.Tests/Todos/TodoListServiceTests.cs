@@ -18,7 +18,6 @@ public sealed class TodoListServiceTests : ServiceTestsBase
 
         await Assert.That(firstList.Name).IsEqualTo("Inbox");
         await Assert.That(secondList.Name).IsEqualTo("Inbox");
-        await Assert.That(firstList.CreatedById).IsNotEqualTo(secondList.CreatedById);
     }
 
     [Test]
@@ -61,10 +60,9 @@ public sealed class TodoListServiceTests : ServiceTestsBase
         var item = await CreateTodoItemAsync(list.Id, "Review PR");
         var service = Mocker.CreateInstance<TodoListService>();
 
-        var updatedItem = await service.SetItemCompletedAsync(list.Id, item.Id, true, CancellationToken.None);
+        var updatedItem = await service.SetItemCompletedAsync(item.Id, true, CancellationToken.None);
 
         await Assert.That(updatedItem.IsComplete).IsTrue();
-        await Assert.That(updatedItem.LastModifiedDate).IsNotNull();
     }
 
     [Test]
@@ -76,7 +74,7 @@ public sealed class TodoListServiceTests : ServiceTestsBase
         var item = await CreateTodoItemAsync(list.Id, "Review PR");
         var service = Mocker.CreateInstance<TodoListService>();
 
-        await Assert.That(async () => await service.DeleteItemAsync(list.Id, item.Id, CancellationToken.None))
+        await Assert.That(async () => await service.DeleteItemAsync(item.Id, CancellationToken.None))
             .Throws<InvalidOperationException>()
             .WithMessage("Todo item not found.");
     }

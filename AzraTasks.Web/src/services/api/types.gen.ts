@@ -49,8 +49,9 @@ export type TodoItemDto = {
 export type TodoListDto = {
     id?: string;
     name?: string | null;
-    createdDate?: string;
-    itemCount?: number | null;
+    lastModified?: string;
+    itemCount?: number;
+    completedItemCount?: number;
 };
 
 export type UpdateTodoItemRequest = {

@@ -19,9 +19,6 @@ public static class TodoListExtensions
         todoLists.MapDelete("/{listId:guid}", TodoListMethods.DeleteList)
             .WithName(TodoListRoutes.DeleteList);
 
-        todoLists.MapGet("/{listId:guid}/items", TodoListMethods.GetItems)
-            .WithName(TodoListRoutes.GetItems);
-
         todoLists.MapPost("/{listId:guid}/items", TodoListMethods.CreateItem)
             .WithName(TodoListRoutes.CreateItem);
 

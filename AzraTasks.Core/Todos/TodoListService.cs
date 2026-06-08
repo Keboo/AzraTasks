@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 using AzraTasks.Data;
 
 using Microsoft.EntityFrameworkCore;
@@ -6,21 +8,39 @@ namespace AzraTasks.Core.Todos;
 
 public class TodoListService(ApplicationDbContext context) : ITodoListService
 {
-    public async Task<IEnumerable<TodoList>> GetListsAsync(CancellationToken cancellationToken)
+    public async IAsyncEnumerable<TodoListLite> GetListsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        return await context.TodoLists
+        await foreach (var entity in context.TodoLists
+            .Include(x => x.Items)
             .OrderByDescending(x => x.CreatedDate)
-            .ToListAsync(cancellationToken);
+            .Select(x => new
+            {
+                x.Id,
+                x.Name,
+                ItemCount = x.Items.Count,
+                CompletedItemCount = x.Items.Count(x => x.IsComplete),
+                x.LastModifiedDate
+            })
+            .AsAsyncEnumerable()
+            .WithCancellation(cancellationToken))
+        {
+            yield return new TodoListLite(entity.Id, entity.Name, entity.ItemCount, entity.CompletedItemCount, entity.LastModifiedDate);
+        }
     }
 
-    public async Task<TodoList?> GetListByIdAsync(Guid listId, CancellationToken cancellationToken)
+    public async Task<TodoListFull?> GetListByIdAsync(Guid listId, CancellationToken cancellationToken)
     {
-        return await context.TodoLists
-            .Include(x => x.CreatedBy)
+        var list = await context.TodoLists
+            .Include(x => x.Items)
             .FirstOrDefaultAsync(x => x.Id == listId, cancellationToken);
+
+        if (list is null) return null;
+
+        return new TodoListFull(list.Id, list.Name, list.LastModifiedDate,
+            [.. list.Items.Select(TodoListItem.FromEntity)]);
     }
 
-    public async Task<TodoList> CreateListAsync(string name, CancellationToken cancellationToken)
+    public async Task<TodoListLite> CreateListAsync(string name, CancellationToken cancellationToken)
     {
         var normalizedName = NormalizeListName(name);
 
@@ -42,7 +62,7 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
         context.TodoLists.Add(list);
         await context.SaveChangesAsync(cancellationToken);
 
-        return list;
+        return new TodoListLite(list.Id, list.Name, 0, 0, list.LastModifiedDate);
     }
 
     public async Task DeleteListAsync(Guid listId, CancellationToken cancellationToken)
@@ -57,15 +77,7 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<TodoItem>> GetItemsAsync(Guid listId, CancellationToken cancellationToken)
-    {
-        return await context.TodoItems
-            .Where(item => item.ListId == listId)
-            .OrderByDescending(item => item.CreatedDate)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<TodoItem> CreateItemAsync(Guid listId, string title, CancellationToken cancellationToken)
+    public async Task<TodoListItem> CreateItemAsync(Guid listId, string title, CancellationToken cancellationToken)
     {
         var normalizedTitle = NormalizeItemTitle(title);
 
@@ -80,36 +92,34 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
         context.TodoItems.Add(question);
         await context.SaveChangesAsync(cancellationToken);
 
-        return question;
+        return TodoListItem.FromEntity(question);
     }
 
-    public async Task<TodoItem> UpdateItemAsync(Guid listId, Guid itemId, string title, CancellationToken cancellationToken)
+    public async Task<TodoListItem> UpdateItemAsync(Guid itemId, string title, CancellationToken cancellationToken)
     {
         var normalizedTitle = NormalizeItemTitle(title);
 
-        var item = await GetOwnedItemAsync(context, listId, itemId, cancellationToken);
+        var item = await GetOwnedItemAsync(context, itemId, cancellationToken);
 
         item.Text = normalizedTitle;
-        item.LastModifiedDate = DateTimeOffset.UtcNow;
 
         await context.SaveChangesAsync(cancellationToken);
-        return item;
+        return TodoListItem.FromEntity(item);
     }
 
-    public async Task<TodoItem> SetItemCompletedAsync(Guid listId, Guid itemId, bool isCompleted, CancellationToken cancellationToken)
+    public async Task<TodoListItem> SetItemCompletedAsync(Guid itemId, bool isCompleted, CancellationToken cancellationToken)
     {
-        var item = await GetOwnedItemAsync(context, listId, itemId, cancellationToken);
+        var item = await GetOwnedItemAsync(context, itemId, cancellationToken);
 
         item.IsComplete = isCompleted;
-        item.LastModifiedDate = DateTimeOffset.UtcNow;
 
         await context.SaveChangesAsync(cancellationToken);
-        return item;
+        return TodoListItem.FromEntity(item);
     }
 
-    public async Task DeleteItemAsync(Guid listId, Guid itemId, CancellationToken cancellationToken)
+    public async Task DeleteItemAsync(Guid itemId, CancellationToken cancellationToken)
     {
-        var item = await GetOwnedItemAsync(context, listId, itemId, cancellationToken);
+        var item = await GetOwnedItemAsync(context, itemId, cancellationToken);
 
         context.TodoItems.Remove(item);
         await context.SaveChangesAsync(cancellationToken);
@@ -166,14 +176,13 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
 
     private static async Task<TodoItem> GetOwnedItemAsync(
         ApplicationDbContext context,
-        Guid listId,
         Guid itemId,
         CancellationToken cancellationToken)
     {
         var item = await context.TodoItems
             .Include(item => item.List)
             .AsTracking()
-            .FirstOrDefaultAsync(item => item.Id == itemId && item.ListId == listId, cancellationToken);
+            .FirstOrDefaultAsync(item => item.Id == itemId, cancellationToken);
 
         return item ?? throw new InvalidOperationException("Todo item not found.");
     }

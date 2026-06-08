@@ -1,5 +1,4 @@
 using AzraTasks.Core.Todos;
-using AzraTasks.Data;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -11,11 +10,12 @@ public static class TodoListMethods
         ITodoListService todoListService,
         CancellationToken cancellationToken)
     {
-        var lists = await todoListService.GetListsAsync(cancellationToken);
+        var lists = await todoListService.GetListsAsync(cancellationToken)
+            .ToListAsync(cancellationToken);
         return TypedResults.Ok(lists.Select(TodoListDto.FromList));
     }
 
-    public static async Task<Results<Ok<TodoListDto>, NotFound>> GetList(
+    public static async Task<Results<Ok<TodoListFullDto>, NotFound>> GetList(
         Guid listId,
         ITodoListService todoListService,
         CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ public static class TodoListMethods
 
         return list is null
             ? TypedResults.NotFound()
-            : TypedResults.Ok(TodoListDto.FromList(list));
+            : TypedResults.Ok(TodoListFullDto.FromList(list));
     }
 
     public static async Task<CreatedAtRoute<TodoListDto>> CreateList(
@@ -47,15 +47,6 @@ public static class TodoListMethods
         return TypedResults.NoContent();
     }
 
-    public static async Task<Ok<IEnumerable<TodoItemDto>>> GetItems(
-        Guid listId,
-        ITodoListService todoListService,
-        CancellationToken cancellationToken)
-    {
-        var items = await todoListService.GetItemsAsync(listId, cancellationToken);
-        return TypedResults.Ok(items.Select(TodoItemDto.FromTodoItem));
-    }
-
     public static async Task<CreatedAtRoute<TodoItemDto>> CreateItem(
         Guid listId,
         CreateTodoItemRequest request,
@@ -69,34 +60,31 @@ public static class TodoListMethods
     }
 
     public static async Task<Ok<TodoItemDto>> UpdateItem(
-        Guid listId,
         Guid itemId,
         UpdateTodoItemRequest request,
         ITodoListService todoListService,
         CancellationToken cancellationToken)
     {
-        var item = await todoListService.UpdateItemAsync(listId, itemId, request.Title, cancellationToken);
+        var item = await todoListService.UpdateItemAsync(itemId, request.Title, cancellationToken);
         return TypedResults.Ok(TodoItemDto.FromTodoItem(item));
     }
 
     public static async Task<Ok<TodoItemDto>> SetItemCompletion(
-        Guid listId,
         Guid itemId,
         SetTodoItemCompletionRequest request,
         ITodoListService todoListService,
         CancellationToken cancellationToken)
     {
-        var item = await todoListService.SetItemCompletedAsync(listId, itemId, request.IsCompleted, cancellationToken);
+        var item = await todoListService.SetItemCompletedAsync(itemId, request.IsCompleted, cancellationToken);
         return TypedResults.Ok(TodoItemDto.FromTodoItem(item));
     }
 
     public static async Task<NoContent> DeleteItem(
-        Guid listId,
         Guid itemId,
         ITodoListService todoListService,
         CancellationToken cancellationToken)
     {
-        await todoListService.DeleteItemAsync(listId, itemId, cancellationToken);
+        await todoListService.DeleteItemAsync(itemId, cancellationToken);
         return TypedResults.NoContent();
     }
 }
@@ -109,24 +97,28 @@ public sealed record UpdateTodoItemRequest(string Title);
 
 public sealed record SetTodoItemCompletionRequest(bool IsCompleted);
 
-public sealed record TodoListDto(Guid Id, string Name, DateTimeOffset CreatedDate, int? ItemCount)
+public sealed record TodoListDto(Guid Id, string Name, DateTimeOffset LastModified, int ItemCount, int CompletedItemCount)
 {
-    public static TodoListDto FromList(TodoList list) => new(list.Id, list.Name, list.CreatedDate, list.Items.Count);
+    public static TodoListDto FromList(TodoListLite list) 
+        => new(list.Id, list.Name, list.LastModified, list.ItemCount, list.CompletedItemCount);
 }
+
+public sealed record TodoListFullDto(Guid Id, string Name, DateTimeOffset LastModified, IReadOnlyList<TodoItemDto> Items)
+{
+    public static TodoListFullDto FromList(TodoListFull list) 
+        => new(list.Id, list.Name, list.LastModified, [..list.Items.Select(TodoItemDto.FromTodoItem)]);
+}
+
 
 public sealed record TodoItemDto(
     Guid Id,
-    Guid ListId,
     string Title,
     bool IsCompleted,
-    DateTimeOffset CreatedDate,
-    DateTimeOffset? LastModifiedDate)
+    DateTimeOffset? LastModified)
 {
-    public static TodoItemDto FromTodoItem(TodoItem item) => new(
+    public static TodoItemDto FromTodoItem(TodoListItem item) => new(
         item.Id,
-        item.ListId,
         item.Text,
         item.IsComplete,
-        item.CreatedDate,
-        item.LastModifiedDate);
+        item.LastModified);
 }

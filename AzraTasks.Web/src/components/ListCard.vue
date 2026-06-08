@@ -12,6 +12,11 @@ const handleDeleteClick = (event: MouseEvent) => {
   event.stopPropagation()
   emit('remove', props.list)
 }
+
+const percentageFormatter = new Intl.NumberFormat(undefined, {
+  style: 'percent',
+  maximumFractionDigits: 0
+});
 </script>
 
 <template>
@@ -22,7 +27,8 @@ const handleDeleteClick = (event: MouseEvent) => {
     @click="emit('open', list)"
   >
     <v-card-title class="d-flex align-center">
-      {{ list.name }} - ({{ list.itemCount }})
+      <span>{{ list.name }}</span>
+      <span v-if="list.itemCount != 0">- {{ percentageFormatter.format(list.completedItemCount! / list.itemCount!) }}</span>
       <v-spacer />
       <v-btn
         color="error"
@@ -32,7 +38,7 @@ const handleDeleteClick = (event: MouseEvent) => {
       />
     </v-card-title>
     <v-card-subtitle>
-      Created {{ new Date(list.createdDate!).toLocaleString() }}
+      Last updated {{ new Date(list.lastModified!).toLocaleString() }}
     </v-card-subtitle>
     <v-card-actions>
       <v-btn

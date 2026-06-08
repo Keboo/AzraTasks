@@ -11,5 +11,5 @@ public abstract class TrackingBase
 
     public DateTimeOffset CreatedDate { get; set; } = DateTimeOffset.UtcNow;
 
-    public DateTimeOffset? LastModifiedDate { get; set; }
+    public DateTimeOffset LastModifiedDate { get; set; }
 }
