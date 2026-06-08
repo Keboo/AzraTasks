@@ -27,11 +27,11 @@ function goToHome() {
         <v-card-title class="text-h5 pt-6 px-6">
           <v-btn
             variant="text"
-            class="text-headline-large"
+            class="text-headline-small"
             @click="goToHome"
           >
             <v-icon icon="mdi-arrow-left" />
-            AzraTasks
+            Azra Tasks
           </v-btn>
           <v-tabs
             v-model="tab"
