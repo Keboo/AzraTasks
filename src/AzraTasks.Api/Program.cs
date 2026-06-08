@@ -59,18 +59,10 @@ authBuilder.AddIdentityCookies(options =>
     {
         cookieOptions.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 
-        if (builder.Environment.IsDevelopment())
-        {
-            // In development, Vite dev server is cross-origin so we need SameSite=None
-            cookieOptions.Cookie.SameSite = SameSiteMode.None;
-        }
-        else
-        {
-            // In production, frontend and backend are same-site (same eTLD+1),
-            // so Lax cookies are sent on cross-origin fetch requests.
-            // SameSite=None would be blocked by iOS Safari's ITP.
-            cookieOptions.Cookie.SameSite = SameSiteMode.Lax;
-        }
+        // The frontend (Azure Static Web Apps) and backend (Azure Container Apps) are on
+        // different domains. On a production deployment, the expectation would be using a real
+        // domain rather than the Azure generated ones.
+        cookieOptions.Cookie.SameSite = SameSiteMode.None;
     });
 });
 
