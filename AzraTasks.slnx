@@ -30,6 +30,7 @@
   <Folder Name="/tests/">
     <Project Path="test/AzraTasks.Core.Tests/AzraTasks.Core.Tests.csproj" />
     <Project Path="test/AzraTasks.Data.Tests/AzraTasks.Data.Tests.csproj" />
+    <Project Path="test/AzraTasks.Testing/AzraTasks.Testing.csproj" />
   </Folder>
   <Project Path="AzraTasks.AppHost/AzraTasks.AppHost.csproj" />
 </Solution>

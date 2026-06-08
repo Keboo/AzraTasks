@@ -41,7 +41,7 @@ public static class DependencyInjection
         // Only run migrations on startup when explicitly enabled (e.g., during: azd up)
         // Applying migrations on startup is not recommended for production scenarios.
         // See: https://learn.microsoft.com/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli&WT.mc_id=DT-MVP-5003472
-        if (builder.Configuration.GetValue<bool>("RunMigrationsOnStartup"))
+        if (builder.Configuration.GetValue<bool>("SkipMigrationsOnStartup"))
         {
             builder.Services.AddHostedService<DatabaseMigrationService>();
         }

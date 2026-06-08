@@ -1,3 +1,4 @@
+using AzraTasks.Data;
 using AzraTasks.Data.Auth;
 
 using Microsoft.Data.Sqlite;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 using Moq.AutoMock.Resolvers;
 
-namespace AzraTasks.Data.Tests;
+namespace AzraTasks.Testing;
 
 public static partial class AutoMockerExtensions
 {
@@ -34,12 +35,6 @@ public static partial class AutoMockerExtensions
         {
             using var context = mocker.Get<ApplicationDbContext>();
             await action(context);
-        }
-
-        public async Task<T> InDbScopeAsync<T>(Func<ApplicationDbContext, Task<T>> action)
-        {
-            using var context = mocker.Get<ApplicationDbContext>();
-            return await action(context);
         }
     }
 }

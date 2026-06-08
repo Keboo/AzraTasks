@@ -1,10 +1,12 @@
 using AzraTasks.Data;
 
-namespace AzraTasks.Core.Tests;
+namespace AzraTasks.Testing;
 
-public abstract class ServiceTestsBase
+public abstract class UnitTestBase
 {
     protected AutoMocker Mocker { get; } = new();
+
+    protected static CancellationToken CT => TestContext.Current!.Execution.CancellationToken;
 
     [Before(Test)]
     public async Task Setup()
@@ -32,7 +34,7 @@ public abstract class ServiceTestsBase
             UserName = $"{userId}@example.com",
             Email = $"{userId}@example.com"
         };
-        
+
         await Mocker.InDbScopeAsync(async context =>
         {
             context.Users.Add(user);

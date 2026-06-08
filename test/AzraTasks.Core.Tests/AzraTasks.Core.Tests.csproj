@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\AzraTasks.Core\AzraTasks.Core.csproj" />
+    <ProjectReference Include="..\AzraTasks.Testing\AzraTasks.Testing.csproj" />
   </ItemGroup>
 
   <ItemGroup>

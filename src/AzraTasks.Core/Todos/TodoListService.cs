@@ -79,9 +79,16 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
 
     public async Task<TodoListItem> CreateItemAsync(Guid listId, string title, CancellationToken cancellationToken)
     {
-        var normalizedTitle = NormalizeItemTitle(title);
+        var listExists = await context.TodoLists
+            .Include(x => x.CreatedBy)
+            .AnyAsync(x => x.Id == listId, cancellationToken);
 
-        await EnsureOwnedListExistsAsync(context, listId, cancellationToken);
+        if (!listExists)
+        {
+            throw new InvalidOperationException("Todo list not found.");
+        }
+
+        var normalizedTitle = NormalizeItemTitle(title);
 
         var item = new TodoItem
         {
@@ -157,21 +164,6 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
         }
 
         return normalized;
-    }
-
-    private static async Task EnsureOwnedListExistsAsync(
-        ApplicationDbContext context,
-        Guid listId,
-        CancellationToken cancellationToken)
-    {
-        var listExists = await context.TodoLists
-            .Include(x => x.CreatedBy)
-            .AnyAsync(x => x.Id == listId, cancellationToken);
-
-        if (!listExists)
-        {
-            throw new InvalidOperationException("Todo list not found.");
-        }
     }
 
     private static async Task<TodoItem> GetOwnedItemAsync(

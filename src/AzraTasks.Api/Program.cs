@@ -39,9 +39,7 @@ builder.Services.AddCors(options =>
         }
         else
         {
-            // In production, restrict to specific origins from configuration
-            var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() 
-                ?? ["https://yourdomain.com"];
+            var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? [];
             policy.WithOrigins(allowedOrigins)
                   .AllowAnyHeader()
                   .AllowAnyMethod()
@@ -51,9 +49,7 @@ builder.Services.AddCors(options =>
 });
 
 // Add authorization policies
-builder.Services.AddAuthorization(options =>
-{
-});
+builder.Services.AddAuthorization();
 
 var authBuilder = builder.Services.AddAuthentication(options =>
 {

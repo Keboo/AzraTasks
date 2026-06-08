@@ -1,105 +1,68 @@
-# Aspire React App template
-This template creates a [React Web App](https://react.dev/) solution with .NET Aspire orchestration, Identity authentication, and unit tests.
+# AzraTaks
+A small to-do task management app, built with ASP.NET + Vue.
+The structure was heavily influences by my [Aspire React dotnet template](https://github.com/Keboo/DotnetTemplates).
+
+The project is deployed to Azure and the running instance can be found at: https://black-moss-077b5271e.7.azurestaticapps.net/
+
+# Running the project locally
+Though the project leverage [Aspire](https://aspire.dev). By launching the app with the Aspire host, it will handle restoring all packages, starting the frontend vite server, starting the backend ASP.NET Core server, and linking everything together.
+
+## Prerequisites
+
+- [.NET SDK v10.0.x](https://get.dot.net)
+- [Node v26.x](https://nodejs.org/)
+
+## Launch with the Aspire CLI
+If the [Aspire CLI](https://aspire.dev/reference/cli/overview/) is installed, you can simply run `aspire run` from the root of the repository.
+
+## Launch with Visual Studio 2026
+- Open the AzraTasks.slnx solution file
+- Ensure the AzraTasks.AppHost is set as the startup project
+- Press F5 to start the application
+
+## Launch with Visual Studio Code
+- 
+
+## Launch from the terminal
+From the root of the repository run `dotnet build` then `dotnet run --project AzraTasks.AppHost/AzraTasks.AppHost.csproj`
 
 
-## Template
-Create a new app in your current directory by running.
+# A high-level tour
 
-```cli
-> dotnet new keboo.react
+## Infrastructure
+This app is being built and deployed onto Azure infrastructure.
+
+```mermaid
+flowchart LR
+    U[Users] --> SWA Azure Static Web App\n(Frontend)
+    SWA -->|HTTPS API calls| Azure Container App\n(Backend API)
+
+    subgraph CAE[Azure Container Apps Environment (CAE)]
+      CA
+    end
+
+    ACR[Azure Container Registry (ACR)] -->|Serves backend image| CA
+
+    MI[User-Assigned Managed Identity\n(azratasks-*-mi)] -. attached to .-> CA
+    MI -. used for registry auth .-> ACR
+    MI -. AcrPull role assignment .-> ACR
+
+    classDef highlight fill:#fff3cd,stroke:#ff9800,stroke-width:2px,color:#333;
+    class MI,ACR,CA highlight;
 ```
 
-### Parameters
-[Default template options](https://learn.microsoft.com/dotnet/core/tools/dotnet-new#options)
+## Backend and Database
+The backend components are separated into the Api, Core, Data, and ServiceDefaults projects. Though all of these could be collapsed into a single project, it would mitigate many of the benefits of being able to easily share code with any additional services.
+- The Api project is an ASP.NET Core project using [minimal APIs](https://learn.microsoft.com/aspnet/core/fundamentals/minimal-apis). It focuses on the API interactions and auth.
+- The Core project contains the business logic of the application. 
+- The Data project contains all of the EF Models, DbContext, and related code (such as interceptors) for interacting with the database. 
+- The Service Defaults project is the [Aspire generated Service Defaults project](https://aspire.dev/get-started/csharp-service-defaults/).
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--pipeline` | CI/CD provider to use. Options: `github`, `azuredevops`, `none` | `github` |
-| `--sln` | Use legacy .sln format instead of .slnx format | `false` |
+## Frontend
+The frontend application is inside of the AzraTasks.Web project. It is leveraging [Hep API](https://heyapi.dev/) to generate a TypeScript client for the backend using the published OpenAPI spec. 
 
-This template includes TUnit-based test projects by default.
+The authentication is just simple web auth
 
-**Example with Azure DevOps:**
-```cli
-> dotnet new keboo.react --pipeline azuredevops
-```
+## Testing
 
-**Example with no CI/CD pipeline:**
-```cli
-> dotnet new keboo.react --pipeline none
-```
-
-**Example with legacy .sln format:**
-```cli
-> dotnet new keboo.react --sln true
-```
-
-
-## Updating .NET Version
-
-This template uses a `global.json` file to specify the required .NET SDK version. To update the .NET SDK version:
-
-1. Update the `global.json` file in the solution root
-2. Update the `<TargetFramework>` in the `csproj` files.
-
-## Key Features
-
-### Build Customization
-[Docs](https://learn.microsoft.com/visualstudio/msbuild/customize-by-directory?view=vs-2022&WT.mc_id=DT-MVP-5003472)
-
-### Centralized Package Management
-[Docs](https://learn.microsoft.com/nuget/consume-packages/Central-Package-Management?WT.mc_id=DT-MVP-5003472)
-
-### NuGet package source mapping
-[Docs](https://learn.microsoft.com/nuget/consume-packages/package-source-mapping?WT.mc_id=DT-MVP-5003472)
-
-### GitHub Actions / Azure DevOps Pipeline
-Build, test, and code coverage reporting included. Use `--pipeline` parameter to choose between GitHub Actions (default) or Azure DevOps Pipelines.
-
-### Solution File Format (slnx)
-By default, this template uses the new `.slnx` (XML-based solution) format introduced in .NET 9. This modern format is more maintainable and easier to version control compared to the legacy `.sln` format.
-
-[Blog: Introducing slnx support in the dotnet CLI](https://devblogs.microsoft.com/dotnet/introducing-slnx-support-dotnet-cli/?WT.mc_id=DT-MVP-5003472)  
-[Docs: dotnet sln command](https://learn.microsoft.com/dotnet/core/tools/dotnet-sln?WT.mc_id=DT-MVP-5003472)
-
-If you need to use the legacy `.sln` format, use the `--sln true` parameter when creating the template.
-
-## Deployment
-Deployment is handled with the [Azure Development CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/?WT.mc_id=DT-MVP-5003472).
-
-This can be [installed](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows&WT.mc_id=DT-MVP-5003472) with `winget install microsoft.azd` 
-
-If you don't already have it installed, you will also need to install bicep as this is what 
-
-You will first need to login using `azd auth login` to authenticate with the Azure account that will be used for deployment.
-
-On your first time, you will need to run `azd init` and scan the current directory. It will prompt you to provide a unique name for the app. This information will be stored in a `.azure` directory. It will also generate an `azure.yaml` file as well as a `next-steps.md` file outlining how to continue with publishing.
-
-## Initial Project Setup
-
-To configure Azure AD App Registrations, GitHub Actions OIDC, and Terraform backend infrastructure, run the interactive setup script:
-
-```powershell
-.\Setup.ps1
-```
-
-The script will:
-1. Prompt for your project name (defaults to the repository name)
-2. Detect your GitHub remote and Azure subscription
-3. Create Azure AD App Registrations with federated credentials for CI/CD
-4. Create the Terraform backend storage account
-5. Generate `Infra/prod/service_principals.tf` with the correct service principal references
-6. Configure GitHub repository secrets
-
-**Prerequisites:** [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli), [GitHub CLI](https://cli.github.com/), and [Terraform](https://www.terraform.io/downloads).
-
-After running the setup script, initialize Terraform:
-
-```bash
-cd Infra
-terraform init
-terraform plan
-```
-
-
-
+# Assumptions + Potential Future Improvements

@@ -30,6 +30,7 @@
     </PackageVersion>
     <PackageVersion Include="Moq.AutoMock" Version="4.0.2" />
     <PackageVersion Include="TUnit" Version="1.50.0" />
+    <PackageVersion Include="TUnit.Core" Version="1.50.0" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.3" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.15.3" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2" />

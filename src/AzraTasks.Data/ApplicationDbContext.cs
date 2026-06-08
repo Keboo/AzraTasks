@@ -34,9 +34,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         }
 
         SetupTracking<TodoList>()
+            //NB: Ensure DB queries by default are filtered to the creating user
             .HasQueryFilter(CreatedByUserQueryFilterId, x => x.CreatedById == userIdProvider.UserId);
 
         SetupTracking<TodoItem>()
+            //NB: Ensure DB queries by default are filtered to the creating user
             .HasQueryFilter(CreatedByUserQueryFilterId, x => x.List!.CreatedById == userIdProvider.UserId);
 
         if (Database.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite")
@@ -58,9 +60,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                         property.SetValueConverter(converter);
                     }
                 }
-
             }
-
         }
     }
 }

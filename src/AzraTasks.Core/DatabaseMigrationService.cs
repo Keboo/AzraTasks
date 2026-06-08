@@ -17,7 +17,7 @@ internal sealed class DatabaseMigrationService(
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        // Wait for the application to be fully started
+        // Yield to allow the application to be fully started
         await Task.Yield();
 
         try
