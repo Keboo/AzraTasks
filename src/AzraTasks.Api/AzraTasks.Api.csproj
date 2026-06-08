@@ -12,15 +12,6 @@
     <OpenApiDocumentsDirectory>.</OpenApiDocumentsDirectory>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <PublishAot>true</PublishAot>
-    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
-    <InvariantGlobalization>true</InvariantGlobalization>
-    <IlcOptimizationPreference>Speed</IlcOptimizationPreference>
-    <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
-    <OpenApiGenerateDocumentsOnBuild>false</OpenApiGenerateDocumentsOnBuild>
-  </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\AzraTasks.Core\AzraTasks.Core.csproj" />
     <ProjectReference Include="..\AzraTasks.Data\AzraTasks.Data.csproj" />

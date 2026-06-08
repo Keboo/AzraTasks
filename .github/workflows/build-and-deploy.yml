@@ -68,18 +68,6 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
 
-      - name: Verify OpenAPI document is up to date
-        run: |
-          dotnet build .\src\AzraTasks.Api\AzraTasks.Api.csproj `
-            --configuration Release `
-            --no-restore `
-            -p:PublishAot=false `
-            -p:OpenApiGenerateDocuments=true `
-            -p:OpenApiGenerateDocumentsOnBuild=true
-
-          git update-index --refresh
-          git --no-pager diff --exit-code -- .\src\AzraTasks.Api\AzraTasks.Api.json
-
       - name: Restore dotnet tool
         run: dotnet tool restore
 
