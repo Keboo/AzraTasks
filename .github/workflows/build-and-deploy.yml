@@ -65,11 +65,8 @@ jobs:
         env:
           BACKEND_URL: ''
 
-      - name: Restore .NET dependencies
-        run: dotnet restore
-
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build --no-restore --configuration Release --runtime linux-x64
 
       - name: Verify OpenAPI document is up to date
         run: |
