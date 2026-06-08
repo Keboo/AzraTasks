@@ -54,13 +54,6 @@ export default defineConfig({
         secure: false,
         cookieDomainRewrite: 'localhost',
       },
-      '/hubs': {
-        target: backendUrl,
-        changeOrigin: true,
-        secure: false,
-        ws: true,
-        cookieDomainRewrite: 'localhost',
-      },
     },
   },
   build: {

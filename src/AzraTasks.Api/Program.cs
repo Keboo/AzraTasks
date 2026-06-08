@@ -1,13 +1,9 @@
-using System.Text;
-
 using AzraTasks.Api.Auth;
 using AzraTasks.Core;
 using AzraTasks.Data;
 using AzraTasks.Api.Middleware;
 
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 using AzraTasks.Data.Auth;
 using AzraTasks.Api.Todo;
 
@@ -77,50 +73,6 @@ authBuilder.AddIdentityCookies(options =>
         }
     });
 });
-
-authBuilder.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = "AzraTasks",
-        ValidAudience = "AzraTasks",
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["SignalR:SigningKey"] 
-                ?? "AzraTasks-SignalR-Signing-Key-Min-32-Chars-Long!"))
-    };
-
-    // For SignalR, read the token from the query string
-    options.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
-        {
-            var accessToken = context.Request.Query["access_token"];
-            if (!string.IsNullOrEmpty(accessToken) && context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
-            {
-                context.Token = accessToken;
-            }
-            return Task.CompletedTask;
-        },
-        OnAuthenticationFailed = context =>
-        {
-            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-            logger.LogWarning("JWT authentication failed: {Exception}", context.Exception.Message);
-            return Task.CompletedTask;
-        },
-        OnChallenge = context =>
-        {
-            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-            logger.LogWarning("JWT authentication challenge: {Error} - {ErrorDescription}", context.Error, context.ErrorDescription);
-            return Task.CompletedTask;
-        }
-    };
-});
-
-builder.Services.AddSignalR();
 
 // No-op email sender for now (can be replaced with real implementation)
 builder.Services.AddScoped<IEmailSender<ApplicationUser>>(sp => 

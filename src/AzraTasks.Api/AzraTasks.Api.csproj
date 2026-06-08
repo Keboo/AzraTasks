@@ -24,7 +24,6 @@
     <ProjectReference Include="..\AzraTasks.Core\AzraTasks.Core.csproj" />
     <ProjectReference Include="..\AzraTasks.Data\AzraTasks.Data.csproj" />
     <ProjectReference Include="..\AzraTasks.ServiceDefaults\AzraTasks.ServiceDefaults.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" />
     <PackageReference Include="Microsoft.Extensions.ApiDescription.Server">
       <PrivateAssets>all</PrivateAssets>

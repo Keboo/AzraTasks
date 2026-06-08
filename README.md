@@ -61,8 +61,14 @@ The backend components are separated into the Api, Core, Data, and ServiceDefaul
 ## Frontend
 The frontend application is inside of the AzraTasks.Web project. It is leveraging [Hep API](https://heyapi.dev/) to generate a TypeScript client for the backend using the published OpenAPI spec. 
 
-The authentication is just simple web auth
+The authentication is just simple [ASP.NET Core Identity with cookies auth](https://learn.microsoft.com/aspnet/core/security/authentication/identity). There is no validation that the email provided is valid, and it uses the [default password complexity requirements](https://learn.microsoft.com/aspnet/core/security/authentication/identity-configuration?view=aspnetcore-10.0#password).
 
 ## Testing
+There are two unit test projects for both the Core and Data test projects to ensure that the services and the EF interceptors are working as designed.
 
-# Assumptions + Potential Future Improvements
+# Assumptions
+This is expected to be a "Production MVP". I believe that anything that is production ready needs to be shippable and deployed somewhere. So I included the terraform I used to stand up the Azure infrastructure.
+
+SQLite was used as a way to keep things simple, however, it would be the first thing I would replace and move to managed DBMS such as Azure SQL. This simplicity means that each deployment get a fresh database, but it does make the code simpler to work with.
+
+# Potential Future Improvements
