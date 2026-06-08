@@ -56,7 +56,7 @@ public static class Resources
                         "--startup-project",
                         "./AzraTasks.AppHost",
                         "--project",
-                        "./AzraTasks.Data",
+                        "./src/AzraTasks.Data",
                         "--no-build",
                         "add",
                         migrationNameResult.Data.Value
@@ -105,7 +105,7 @@ public static class Resources
                         "--startup-project",
                         "./AzraTasks.AppHost",
                         "--project",
-                        "./AzraTasks.Data",
+                        "./src/AzraTasks.Data",
                         "--no-build",
                         "remove"
                     },
@@ -164,7 +164,7 @@ public static class Resources
                         "run",
                         "openapi"
                     },
-                    WorkingDirectory = Path.Combine(GetSolutionDirectory()!.FullName, "AzraTasks.Web"),
+                    WorkingDirectory = Path.Combine(GetSolutionDirectory()!.FullName, "src", "AzraTasks.Web"),
                 };
 
                 bool processResult = await builder.Resource.ExecuteProcessAsync(ctx.ServiceProvider, psi);
@@ -243,7 +243,7 @@ public static class Resources
                     "--startup-project",
                     "./AzraTasks.AppHost",
                     "--project",
-                    "./AzraTasks.Data",
+                    "./src/AzraTasks.Data",
                 },
                 WorkingDirectory = GetSolutionDirectory()?.FullName,
                 EnvironmentVariables =
