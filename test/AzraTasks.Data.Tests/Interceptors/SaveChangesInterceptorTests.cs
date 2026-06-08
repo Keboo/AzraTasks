@@ -6,7 +6,7 @@ namespace AzraTasks.Data.Tests.Interceptors;
 public sealed class SaveChangesInterceptorTests : UnitTestBase
 {
     [Test]
-    public async Task SaveChangesAsync_UpdatesTrackingTimestamps()
+    public async Task TrackingBaseInterceptor_UpdatesTrackingTimestamps()
     {
         await CreateUserAsync();
         Guid listId = Guid.Empty;
@@ -23,6 +23,9 @@ public sealed class SaveChangesInterceptorTests : UnitTestBase
 
             context.TodoLists.Add(list);
             await context.SaveChangesAsync(CT);
+
+            // NB: We need to reload here to get the actual rounded timestamp that was persisted
+            await context.Entry(list).ReloadAsync(CT);
 
             listId = list.Id;
             createdDate = list.CreatedDate;

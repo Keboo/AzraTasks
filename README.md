@@ -34,21 +34,17 @@ This app is being built and deployed onto Azure infrastructure.
 
 ```mermaid
 flowchart LR
-    U[Users] --> SWA Azure Static Web App\n(Frontend)
-    SWA -->|HTTPS API calls| Azure Container App\n(Backend API)
+    U[Users] --> SWA["Azure Static Web App<br/>(Frontend)"]
 
-    subgraph CAE[Azure Container Apps Environment (CAE)]
-      CA
+    subgraph Azure
+      SWA -->|HTTPS API calls| CA["Azure Container App<br/>(Backend API)"]
+
+      subgraph CAE["Azure Container Apps Environment"]
+        CA
+      end
+
+      ACR["Azure Container Registry"] -->|User-Assigned Managed Identity<br/>Pulls image| CA
     end
-
-    ACR[Azure Container Registry (ACR)] -->|Serves backend image| CA
-
-    MI[User-Assigned Managed Identity\n(azratasks-*-mi)] -. attached to .-> CA
-    MI -. used for registry auth .-> ACR
-    MI -. AcrPull role assignment .-> ACR
-
-    classDef highlight fill:#fff3cd,stroke:#ff9800,stroke-width:2px,color:#333;
-    class MI,ACR,CA highlight;
 ```
 
 ## Backend and Database
@@ -66,9 +62,13 @@ The authentication is just simple [ASP.NET Core Identity with cookies auth](http
 ## Testing
 There are two unit test projects for both the Core and Data test projects to ensure that the services and the EF interceptors are working as designed.
 
-# Assumptions
+# Assumptions + Future Improvements
 This is expected to be a "Production MVP". I believe that anything that is production ready needs to be shippable and deployed somewhere. So I included the terraform I used to stand up the Azure infrastructure.
 
-SQLite was used as a way to keep things simple, however, it would be the first thing I would replace and move to managed DBMS such as Azure SQL. This simplicity means that each deployment get a fresh database, but it does make the code simpler to work with.
+The data of the application is tied to an individual user and there are EF query filters to ensure that lists and items are limited to the authenticated user. I can easily see potential for expansion where the permissions and access would need to be expanded on to support sharing information between users.
 
-# Potential Future Improvements
+SQLite was used as a way to keep things simple, however, it would be the first thing I would replace and move to managed DBMS such as Azure SQL. This simplicity means that each deployment get a fresh database and horizontal scaling is near impossible.
+
+For a real application the authentication would need to be improved as well. Likely abandoning the simple cookie identity auth in favor of real identity providers.
+
+The testing in this solution is reduced to keep the amount of code in this repository smaller and easier to review. For a more complete testing picture, I would be looking to add [frontend test](https://vuejs.org/guide/scaling-up/testing.html), some small number of UI tests (at least to verify accessibility), and [integration tests for the API](https://aspire.dev/testing/overview/).
