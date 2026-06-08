@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Data.Sqlite;
 
 using Moq.AutoMock.Resolvers;
+using AzraTasks.Data.Auth;
 
 namespace AzraTasks.Core.Tests;
 
@@ -13,8 +14,16 @@ public static partial class AutoMockerExtensions
 {
     extension(AutoMocker mocker)
     {
+        public void WithUser(ApplicationUser user) => mocker.WithUser(user.Id);
+
+        public void WithUser(string userId)
+        {
+            var resolver = mocker.Resolvers.OfType<SqliteConnectionResolver<ApplicationDbContext>>().Single();
+            resolver.UserId = userId;
+        }
+
         public void WithDbContext<TContext>(params IInterceptor[] interceptors)
-        where TContext : DbContext
+            where TContext : DbContext
         {
             SqliteConnectionResolver<TContext> sqliteResolver = new(interceptors);
             //NB: Injecting the resolver so it can be cleaned up with Mocker.AsDisposable()
@@ -36,7 +45,7 @@ public static partial class AutoMockerExtensions
     }
 }
 
-file sealed class SqliteConnectionResolver<TContext> : IMockResolver, IDisposable
+file sealed class SqliteConnectionResolver<TContext> : IUserIdProvider, IMockResolver, IDisposable
     where TContext : DbContext
 {
     public const string CurrentDateTimeOffset = "SYSDATETIMEOFFSET";
@@ -51,6 +60,8 @@ file sealed class SqliteConnectionResolver<TContext> : IMockResolver, IDisposabl
     });
     private bool _disposedValue;
     private readonly IInterceptor[] _interceptors;
+
+    public string UserId { get; set; } = "";
 
     public SqliteConnectionResolver(IInterceptor[] interceptors)
     {
@@ -78,10 +89,11 @@ file sealed class SqliteConnectionResolver<TContext> : IMockResolver, IDisposabl
             context.Value = factory.Object;
         }
 
-        static TContext CreateDbContext(AutoMocker autoMocker)
+        TContext CreateDbContext(AutoMocker autoMocker)
         {
             var options = autoMocker.Get<DbContextOptions<TContext>>();
-            var dbContext = (TContext)Activator.CreateInstance(typeof(TContext), options)!;
+            IUserIdProvider? userIdProvider = this;
+            var dbContext = (TContext)Activator.CreateInstance(typeof(TContext), options, userIdProvider)!;
             dbContext.Database.EnsureCreated();
             return dbContext;
         }

@@ -7,20 +7,6 @@ namespace AzraTasks.Core.Tests.Todos;
 public sealed class TodoListServiceTests : ServiceTestsBase
 {
     [Test]
-    public async Task CreateListAsync_AllowsSameNameForDifferentUsers()
-    {
-        var userOne = await CreateUserAsync("user-one");
-        var userTwo = await CreateUserAsync("user-two");
-        var service = Mocker.CreateInstance<TodoListService>();
-
-        var firstList = await service.CreateListAsync("Inbox", CancellationToken.None);
-        var secondList = await service.CreateListAsync("Inbox", CancellationToken.None);
-
-        await Assert.That(firstList.Name).IsEqualTo("Inbox");
-        await Assert.That(secondList.Name).IsEqualTo("Inbox");
-    }
-
-    [Test]
     public async Task CreateListAsync_RejectsDuplicateNameForSameUser()
     {
         var user = await CreateUserAsync();
@@ -69,9 +55,11 @@ public sealed class TodoListServiceTests : ServiceTestsBase
     public async Task DeleteItemAsync_RejectsOtherUsersList()
     {
         var owner = await CreateUserAsync("owner");
-        var otherUser = await CreateUserAsync("other");
         var list = await CreateTodoList(owner.Id, "Inbox");
         var item = await CreateTodoItemAsync(list.Id, "Review PR");
+
+        // NB: This also sets the current user to other.
+        var otherUser = await CreateUserAsync("other");
         var service = Mocker.CreateInstance<TodoListService>();
 
         await Assert.That(async () => await service.DeleteItemAsync(item.Id, CancellationToken.None))

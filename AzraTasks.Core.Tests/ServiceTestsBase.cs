@@ -9,7 +9,10 @@ public abstract class ServiceTestsBase
     [Before(Test)]
     public async Task Setup()
     {
-        Mocker.WithDbContext<ApplicationDbContext>();
+        Mocker.WithDbContext<ApplicationDbContext>(
+            new TrackingBaseInterceptor(),
+            new CreatedByUserInterceptor()
+        );
     }
 
     [After(Test)]
@@ -35,6 +38,8 @@ public abstract class ServiceTestsBase
             context.Users.Add(user);
             await context.SaveChangesAsync();
         });
+
+        Mocker.WithUser(user);
         return user;
     }
 

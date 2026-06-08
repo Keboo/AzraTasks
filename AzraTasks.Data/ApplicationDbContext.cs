@@ -2,6 +2,7 @@ using AzraTasks.Data.Auth;
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 
@@ -21,24 +22,22 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(modelBuilder);
 
-        void SetupTracking<TTrackingBase>() where TTrackingBase : TrackingBase
+        EntityTypeBuilder<TTrackingBase> SetupTracking<TTrackingBase>() where TTrackingBase : TrackingBase
         {
-            modelBuilder.Entity<TTrackingBase>()
+            var entityBuilder = modelBuilder.Entity<TTrackingBase>();
+
+            entityBuilder
                 .Property(e => e.Id)
                 .HasValueGenerator<SequentialGuidValueGenerator>();
+
+            return entityBuilder;
         }
 
-        void SetupUserObject<TUserObject>() where TUserObject : UserObject
-        {
-            SetupTracking<TUserObject>();
+        SetupTracking<TodoList>()
+            .HasQueryFilter(CreatedByUserQueryFilterId, x => x.CreatedById == userIdProvider.UserId);
 
-            modelBuilder.Entity<TUserObject>()
-                .HasQueryFilter(CreatedByUserQueryFilterId, x => x.CreatedById == userIdProvider.UserId);
-        }
-
-        SetupUserObject<TodoList>();
-        SetupTracking<TodoItem>();
-
+        SetupTracking<TodoItem>()
+            .HasQueryFilter(CreatedByUserQueryFilterId, x => x.List!.CreatedById == userIdProvider.UserId);
 
         if (Database.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite")
         {
