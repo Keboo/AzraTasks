@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateItemData, CreateItemResponses, CreateListData, CreateListResponses, DeleteItemData, DeleteItemResponses, DeleteListData, DeleteListResponses, GetApiAuthUserData, GetApiAuthUserResponses, GetItemsData, GetItemsResponses, GetListData, GetListErrors, GetListResponses, GetListsData, GetListsResponses, PostApiAuthLoginData, PostApiAuthLoginErrors, PostApiAuthLoginResponses, PostApiAuthLogoutData, PostApiAuthLogoutResponses, PostApiAuthRegisterData, PostApiAuthRegisterErrors, PostApiAuthRegisterResponses, SetItemCompletionData, SetItemCompletionResponses, UpdateItemData, UpdateItemResponses } from './types.gen';
+import type { CreateItemData, CreateItemResponses, CreateListData, CreateListResponses, DeleteItemData, DeleteItemResponses, DeleteListData, DeleteListResponses, GetApiAuthUserData, GetApiAuthUserResponses, GetListData, GetListErrors, GetListResponses, GetListsData, GetListsResponses, PostApiAuthLoginData, PostApiAuthLoginErrors, PostApiAuthLoginResponses, PostApiAuthLogoutData, PostApiAuthLogoutResponses, PostApiAuthRegisterData, PostApiAuthRegisterErrors, PostApiAuthRegisterResponses, SetItemCompletionData, SetItemCompletionResponses, UpdateItemData, UpdateItemResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -55,8 +55,6 @@ export const deleteList = <ThrowOnError extends boolean = false>(options: Option
 
 export const getList = <ThrowOnError extends boolean = false>(options: Options<GetListData, ThrowOnError>): RequestResult<GetListResponses, GetListErrors, ThrowOnError> => (options.client ?? client).get<GetListResponses, GetListErrors, ThrowOnError>({ url: '/api/todo-lists/{listId}', ...options });
 
-export const getItems = <ThrowOnError extends boolean = false>(options: Options<GetItemsData, ThrowOnError>): RequestResult<GetItemsResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetItemsResponses, unknown, ThrowOnError>({ url: '/api/todo-lists/{listId}/items', ...options });
-
 export const createItem = <ThrowOnError extends boolean = false>(options: Options<CreateItemData, ThrowOnError>): RequestResult<CreateItemResponses, unknown, ThrowOnError> => (options.client ?? client).post<CreateItemResponses, unknown, ThrowOnError>({
     url: '/api/todo-lists/{listId}/items',
     ...options,
@@ -66,10 +64,10 @@ export const createItem = <ThrowOnError extends boolean = false>(options: Option
     }
 });
 
-export const deleteItem = <ThrowOnError extends boolean = false>(options: Options<DeleteItemData, ThrowOnError>): RequestResult<DeleteItemResponses, unknown, ThrowOnError> => (options.client ?? client).delete<DeleteItemResponses, unknown, ThrowOnError>({ url: '/api/todo-lists/{listId}/items/{itemId}', ...options });
+export const deleteItem = <ThrowOnError extends boolean = false>(options: Options<DeleteItemData, ThrowOnError>): RequestResult<DeleteItemResponses, unknown, ThrowOnError> => (options.client ?? client).delete<DeleteItemResponses, unknown, ThrowOnError>({ url: '/api/todo-lists/items/{itemId}', ...options });
 
 export const updateItem = <ThrowOnError extends boolean = false>(options: Options<UpdateItemData, ThrowOnError>): RequestResult<UpdateItemResponses, unknown, ThrowOnError> => (options.client ?? client).put<UpdateItemResponses, unknown, ThrowOnError>({
-    url: '/api/todo-lists/{listId}/items/{itemId}',
+    url: '/api/todo-lists/items/{itemId}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -78,7 +76,7 @@ export const updateItem = <ThrowOnError extends boolean = false>(options: Option
 });
 
 export const setItemCompletion = <ThrowOnError extends boolean = false>(options: Options<SetItemCompletionData, ThrowOnError>): RequestResult<SetItemCompletionResponses, unknown, ThrowOnError> => (options.client ?? client).put<SetItemCompletionResponses, unknown, ThrowOnError>({
-    url: '/api/todo-lists/{listId}/items/{itemId}/completion',
+    url: '/api/todo-lists/items/{itemId}/completion',
     ...options,
     headers: {
         'Content-Type': 'application/json',

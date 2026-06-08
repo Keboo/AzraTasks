@@ -83,16 +83,16 @@ public class TodoListService(ApplicationDbContext context) : ITodoListService
 
         await EnsureOwnedListExistsAsync(context, listId, cancellationToken);
 
-        var question = new TodoItem
+        var item = new TodoItem
         {
             ListId = listId,
             Text = normalizedTitle,
         };
 
-        context.TodoItems.Add(question);
+        context.TodoItems.Add(item);
         await context.SaveChangesAsync(cancellationToken);
 
-        return TodoListItem.FromEntity(question);
+        return TodoListItem.FromEntity(item);
     }
 
     public async Task<TodoListItem> UpdateItemAsync(Guid itemId, string title, CancellationToken cancellationToken)

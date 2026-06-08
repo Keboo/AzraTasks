@@ -22,13 +22,13 @@ public static class TodoListExtensions
         todoLists.MapPost("/{listId:guid}/items", TodoListMethods.CreateItem)
             .WithName(TodoListRoutes.CreateItem);
 
-        todoLists.MapPut("/{listId:guid}/items/{itemId:guid}", TodoListMethods.UpdateItem)
+        todoLists.MapPut("/items/{itemId:guid}", TodoListMethods.UpdateItem)
             .WithName(TodoListRoutes.UpdateItem);
 
-        todoLists.MapPut("/{listId:guid}/items/{itemId:guid}/completion", TodoListMethods.SetItemCompletion)
+        todoLists.MapPut("/items/{itemId:guid}/completion", TodoListMethods.SetItemCompletion)
             .WithName(TodoListRoutes.SetItemCompletion);
 
-        todoLists.MapDelete("/{listId:guid}/items/{itemId:guid}", TodoListMethods.DeleteItem)
+        todoLists.MapDelete("/items/{itemId:guid}", TodoListMethods.DeleteItem)
             .WithName(TodoListRoutes.DeleteItem);
     }
 }

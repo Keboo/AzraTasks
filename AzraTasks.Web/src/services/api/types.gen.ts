@@ -39,11 +39,9 @@ export type SetTodoItemCompletionRequest = {
 
 export type TodoItemDto = {
     id?: string;
-    listId?: string;
     title?: string | null;
     isCompleted?: boolean;
-    createdDate?: string;
-    lastModifiedDate?: string | null;
+    lastModified?: string | null;
 };
 
 export type TodoListDto = {
@@ -52,6 +50,13 @@ export type TodoListDto = {
     lastModified?: string;
     itemCount?: number;
     completedItemCount?: number;
+};
+
+export type TodoListFullDto = {
+    id?: string;
+    name?: string | null;
+    lastModified?: string;
+    items?: Array<TodoItemDto> | null;
 };
 
 export type UpdateTodoItemRequest = {
@@ -217,28 +222,10 @@ export type GetListResponses = {
     /**
      * OK
      */
-    200: TodoListDto;
+    200: TodoListFullDto;
 };
 
 export type GetListResponse = GetListResponses[keyof GetListResponses];
-
-export type GetItemsData = {
-    body?: never;
-    path: {
-        listId: string;
-    };
-    query?: never;
-    url: '/api/todo-lists/{listId}/items';
-};
-
-export type GetItemsResponses = {
-    /**
-     * OK
-     */
-    200: Array<TodoItemDto>;
-};
-
-export type GetItemsResponse = GetItemsResponses[keyof GetItemsResponses];
 
 export type CreateItemData = {
     body: CreateTodoItemRequest;
@@ -251,9 +238,9 @@ export type CreateItemData = {
 
 export type CreateItemResponses = {
     /**
-     * Created
+     * OK
      */
-    201: TodoItemDto;
+    200: TodoItemDto;
 };
 
 export type CreateItemResponse = CreateItemResponses[keyof CreateItemResponses];
@@ -261,11 +248,10 @@ export type CreateItemResponse = CreateItemResponses[keyof CreateItemResponses];
 export type DeleteItemData = {
     body?: never;
     path: {
-        listId: string;
         itemId: string;
     };
     query?: never;
-    url: '/api/todo-lists/{listId}/items/{itemId}';
+    url: '/api/todo-lists/items/{itemId}';
 };
 
 export type DeleteItemResponses = {
@@ -280,11 +266,10 @@ export type DeleteItemResponse = DeleteItemResponses[keyof DeleteItemResponses];
 export type UpdateItemData = {
     body: UpdateTodoItemRequest;
     path: {
-        listId: string;
         itemId: string;
     };
     query?: never;
-    url: '/api/todo-lists/{listId}/items/{itemId}';
+    url: '/api/todo-lists/items/{itemId}';
 };
 
 export type UpdateItemResponses = {
@@ -299,11 +284,10 @@ export type UpdateItemResponse = UpdateItemResponses[keyof UpdateItemResponses];
 export type SetItemCompletionData = {
     body: SetTodoItemCompletionRequest;
     path: {
-        listId: string;
         itemId: string;
     };
     query?: never;
-    url: '/api/todo-lists/{listId}/items/{itemId}/completion';
+    url: '/api/todo-lists/items/{itemId}/completion';
 };
 
 export type SetItemCompletionResponses = {

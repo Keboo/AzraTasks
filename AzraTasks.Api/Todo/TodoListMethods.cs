@@ -47,7 +47,7 @@ public static class TodoListMethods
         return TypedResults.NoContent();
     }
 
-    public static async Task<CreatedAtRoute<TodoItemDto>> CreateItem(
+    public static async Task<Ok<TodoItemDto>> CreateItem(
         Guid listId,
         CreateTodoItemRequest request,
         ITodoListService todoListService,
@@ -56,7 +56,7 @@ public static class TodoListMethods
         var item = await todoListService.CreateItemAsync(listId, request.Title, cancellationToken);
         var response = TodoItemDto.FromTodoItem(item);
 
-        return TypedResults.CreatedAtRoute(response, TodoListRoutes.GetItems, new { listId });
+        return TypedResults.Ok(response);
     }
 
     public static async Task<Ok<TodoItemDto>> UpdateItem(

@@ -8,7 +8,7 @@ import {
   deleteList as deleteListApi,
   getLists,
 } from '@/services/api'
-import type { TodoListDto } from '@/services/api'
+import type { ProblemDetails, TodoListDto } from '@/services/api'
 
 const router = useRouter()
 
@@ -29,7 +29,8 @@ async function loadLists() {
     const { data } = await getLists({ throwOnError: true })
     lists.value = data
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Unable to load your lists.'
+    const problem = error as ProblemDetails
+    errorMessage.value = problem.detail ?? 'Unable to load your lists.'
   } finally {
     loading.value = false
   }
@@ -49,7 +50,8 @@ async function createList() {
     lists.value = [list, ...lists.value]
     await router.push({ name: 'list', params: { listId: list.id } })
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Unable to create the list.'
+    const problem = error as ProblemDetails
+    errorMessage.value = problem.detail ?? 'Unable to create the list.'
   } finally {
     creating.value = false
   }
@@ -62,7 +64,8 @@ async function removeList(listId: string) {
     await deleteListApi({ path: { listId }, throwOnError: true })
     lists.value = lists.value.filter((list) => list.id !== listId)
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Unable to delete the list.'
+    const problem = error as ProblemDetails
+    errorMessage.value = problem.detail ?? 'Unable to delete the list.'
   } finally {
     deletingList.value = null
   }

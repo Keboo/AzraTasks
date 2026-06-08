@@ -249,8 +249,8 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Created",
+          "200": {
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -262,7 +262,7 @@
         }
       }
     },
-    "/api/todo-lists/{listId}/items/{itemId}": {
+    "/api/todo-lists/items/{itemId}": {
       "put": {
         "tags": [
           "TodoListMethods"
@@ -325,7 +325,7 @@
         }
       }
     },
-    "/api/todo-lists/{listId}/items/{itemId}/completion": {
+    "/api/todo-lists/items/{itemId}/completion": {
       "put": {
         "tags": [
           "TodoListMethods"
