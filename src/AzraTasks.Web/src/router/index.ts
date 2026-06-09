@@ -41,7 +41,7 @@ router.beforeEach(async (to) => {
 
   if (to.meta.requiresAuth && !auth.isAuthenticated.value) {
     return {
-      name: 'login',
+      name: 'auth',
       query: { redirect: to.fullPath },
     }
   }
