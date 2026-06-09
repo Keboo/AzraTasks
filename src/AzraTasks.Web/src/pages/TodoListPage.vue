@@ -218,6 +218,7 @@ onMounted(() => {
           label="Add a task"
           variant="outlined"
           hide-details
+          autofocus
           class="flex-grow-1"
           @keyup.enter="addItem"
         />
@@ -311,6 +312,7 @@ onMounted(() => {
             label="Task title"
             variant="outlined"
             autofocus
+            @keyup.enter="saveEdit"
           />
         </v-card-text>
         <v-card-actions>
