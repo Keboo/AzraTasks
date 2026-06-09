@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
     paths-ignore:
+      - 'images/**'
+      - 'README.md'
       - 'Infra/**'
       - '.github/workflows/deploy-infrastructure.yml'
   pull_request:

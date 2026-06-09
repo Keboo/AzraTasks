@@ -4,6 +4,8 @@ The structure was heavily influences by my [Aspire React dotnet template](https:
 
 The project is deployed to Azure and the running instance can be found at: https://black-moss-077b5271e.7.azurestaticapps.net/
 
+![App Screenshots](images/ProjectDemo.gif)
+
 # Running the project locally
 Though the project leverage [Aspire](https://aspire.dev). By launching the app with the Aspire host, it will handle restoring all packages, starting the frontend vite server, starting the backend ASP.NET Core server, and linking everything together.
 
