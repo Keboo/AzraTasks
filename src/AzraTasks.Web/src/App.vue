@@ -25,7 +25,7 @@ async function handleLogout() {
   <v-app>
     <v-app-bar
       :elevation="0"
-      color="transparent"
+      color="surface"
       density="comfortable"
     >
       <v-app-bar-title
