@@ -42,6 +42,8 @@ module "backend_container_app" {
   identity_id                     = azurerm_user_assigned_identity.app_identity.id
   container_registry_login_server = var.acr_login_server
 
+  min_replicas = 1
+
   env_vars = {
     AZURE_CLIENT_ID                       = azurerm_user_assigned_identity.app_identity.client_id
     APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights.application_insights.connection_string
