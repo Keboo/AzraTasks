@@ -1,4 +1,4 @@
-# AzraTaks
+# Azra Tasks
 A small to-do task management app, built with ASP.NET + Vue.
 The structure was heavily influences by my [Aspire React dotnet template](https://github.com/Keboo/DotnetTemplates).
 
